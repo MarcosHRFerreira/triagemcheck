@@ -1,6 +1,7 @@
 package br.com.TriagemCheck.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,12 +18,6 @@ public class FeedbackProfissionalModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID feedbackprofissionalId;
 
-    @Column(nullable = false)
-    private UUID profissionalId;
-
-    @Column(nullable = false)
-    private UUID triagemId;
-
     @Column(nullable = false, length = 250)
     private String comentario;
 
@@ -38,6 +33,14 @@ public class FeedbackProfissionalModel {
     @Column(nullable = false)
     private LocalDateTime  dataAlteracao;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProfissionalModel feedbackprofissional;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private TriagemModel triagem;
+
 
     public UUID getFeedbackprofissionalId() {
         return feedbackprofissionalId;
@@ -47,21 +50,6 @@ public class FeedbackProfissionalModel {
         this.feedbackprofissionalId = feedbackprofissionalId;
     }
 
-    public UUID getProfissionalId() {
-        return profissionalId;
-    }
-
-    public void setProfissionalId(UUID profissionalId) {
-        this.profissionalId = profissionalId;
-    }
-
-    public UUID getTriagemId() {
-        return triagemId;
-    }
-
-    public void setTriagemId(UUID triagemId) {
-        this.triagemId = triagemId;
-    }
 
     public String getComentario() {
         return comentario;
@@ -101,5 +89,21 @@ public class FeedbackProfissionalModel {
 
     public void setDataAlteracao(LocalDateTime dataAlteracao) {
         this.dataAlteracao = dataAlteracao;
+    }
+
+    public ProfissionalModel getFeedbackprofissional() {
+        return feedbackprofissional;
+    }
+
+    public void setFeedbackprofissional(ProfissionalModel feedbackprofissional) {
+        this.feedbackprofissional = feedbackprofissional;
+    }
+
+    public TriagemModel getTriagem() {
+        return triagem;
+    }
+
+    public void setTriagem(TriagemModel triagem) {
+        this.triagem = triagem;
     }
 }

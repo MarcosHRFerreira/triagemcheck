@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import br.com.TriagemCheck.enums.CorProtocolo;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,8 +21,6 @@ public class TriagemModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID triagemId;
-
-//    private UUID pacienteId;
 
     @Column(nullable = false, length = 250)
     private String sintomas;
@@ -36,14 +37,29 @@ public class TriagemModel {
     @Column(nullable = false)
     private LocalDateTime  dataAlteracao;
 
-    @Column(nullable = false)
-    private UUID profissionalId;
-
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private PacienteModel paciente;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProfissionalModel profissional;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "triagem", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<ResultClinicosModel> resultclinico;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "triagem", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<FeedbackProfissionalModel> feedbackprofissional;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "triagem", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<FeedbackPacienteModel> feedbackpaciente;
 
 
     public UUID getTriagemId() {
@@ -54,13 +70,6 @@ public class TriagemModel {
         this.triagemId = triagemId;
     }
 
-//    public UUID getPacienteId() {
-//        return pacienteId;
-//    }
-//
-//    public void setPacienteId(UUID pacienteId) {
-//        this.pacienteId = pacienteId;
-//    }
 
     public String getSintomas() {
         return sintomas;
@@ -102,19 +111,36 @@ public class TriagemModel {
         this.dataAlteracao = dataAlteracao;
     }
 
-    public UUID getProfissionalId() {
-        return profissionalId;
-    }
-
-    public void setProfissionalId(UUID profissionalId) {
-        this.profissionalId = profissionalId;
-    }
-
     public PacienteModel getPaciente() {
         return paciente;
     }
 
     public void setPaciente(PacienteModel paciente) {
         this.paciente = paciente;
+    }
+
+
+    public ProfissionalModel getProfissional() {
+        return profissional;
+    }
+
+    public void setProfissional(ProfissionalModel profissional) {
+        this.profissional = profissional;
+    }
+
+    public Set<ResultClinicosModel> getResultclinico() {
+        return resultclinico;
+    }
+
+    public void setResultclinico(Set<ResultClinicosModel> resultclinico) {
+        this.resultclinico = resultclinico;
+    }
+
+    public Set<FeedbackProfissionalModel> getFeedbackprofissional() {
+        return feedbackprofissional;
+    }
+
+    public void setFeedbackprofissional(Set<FeedbackProfissionalModel> feedbackprofissional) {
+        this.feedbackprofissional = feedbackprofissional;
     }
 }

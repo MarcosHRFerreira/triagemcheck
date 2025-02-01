@@ -14,9 +14,9 @@ public record TriagemRecordDto(
         @NotBlank(message = "Severidade é necessário")
         String severidade,
         @NotNull(message = "CorProtocolo é necessário")
-        CorProtocolo corProtocolo,
-        @NotNull(message = "ID Profissional da Saúde é necessário")
-        UUID profissionalId
+        CorProtocolo corProtocolo
+//        @NotNull(message = "ID Profissional da Saúde é necessário")
+//        UUID profissionalId
 
 ) {
 }

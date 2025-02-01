@@ -4,10 +4,14 @@ package br.com.TriagemCheck.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import br.com.TriagemCheck.enums.Especialidade;
 import br.com.TriagemCheck.enums.StatusOperacional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -20,6 +24,7 @@ public class ProfissionalModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID profissionalId;
+
     @Column(nullable = false)
     private String crm;
     @Column(nullable = false,length = 150)
@@ -39,12 +44,28 @@ public class ProfissionalModel implements Serializable {
     @Column(nullable = false)
     private String email;
 
-    public UUID getMedicoId() {
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<TriagemModel> triagens;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<ResultClinicosModel> resultclinico;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<ResultClinicosModel> feedbackprofissional;
+
+
+    public UUID getProfissionalId() {
         return profissionalId;
     }
 
-    public void setMedicoId(UUID medicoId) {
-        this.profissionalId = medicoId;
+    public void setProfissionalId(UUID profissionalId) {
+        this.profissionalId = profissionalId;
     }
 
     public String getCrm() {
@@ -71,6 +92,13 @@ public class ProfissionalModel implements Serializable {
         this.especialidade = especialidade;
     }
 
+    public StatusOperacional getStatusOperacional() {
+        return statusOperacional;
+    }
+
+    public void setStatusOperacional(StatusOperacional statusOperacional) {
+        this.statusOperacional = statusOperacional;
+    }
 
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
@@ -104,11 +132,27 @@ public class ProfissionalModel implements Serializable {
         this.email = email;
     }
 
-    public StatusOperacional getStatusOperacional() {
-        return statusOperacional;
+    public Set<TriagemModel> getTriagens() {
+        return triagens;
     }
 
-    public void setStatusOperacional(StatusOperacional statusOperacional) {
-        this.statusOperacional = statusOperacional;
+    public void setTriagens(Set<TriagemModel> triagens) {
+        this.triagens = triagens;
+    }
+
+    public Set<ResultClinicosModel> getResultclinico() {
+        return resultclinico;
+    }
+
+    public void setResultclinico(Set<ResultClinicosModel> resultclinico) {
+        this.resultclinico = resultclinico;
+    }
+
+    public Set<ResultClinicosModel> getFeedbackprofissional() {
+        return feedbackprofissional;
+    }
+
+    public void setFeedbackprofissional(Set<ResultClinicosModel> feedbackprofissional) {
+        this.feedbackprofissional = feedbackprofissional;
     }
 }

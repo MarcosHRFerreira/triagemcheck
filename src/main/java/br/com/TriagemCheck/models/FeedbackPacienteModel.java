@@ -2,6 +2,7 @@ package br.com.TriagemCheck.models;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -19,12 +20,6 @@ public class FeedbackPacienteModel {
     private UUID feedbackpacienteId;
 
     @Column(nullable = false)
-    private UUID pacienteId;
-
-    @Column(nullable = false)
-    private UUID triagemId;
-
-    @Column(nullable = false)
     private LocalDateTime dataFeedback;
 
     @Column(nullable = false, length = 250)
@@ -38,28 +33,22 @@ public class FeedbackPacienteModel {
     @Column(nullable = false)
     private LocalDateTime  dataAlteracao;
 
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private PacienteModel paciente;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private TriagemModel triagem;
+
+
     public UUID getFeedbackpacienteId() {
         return feedbackpacienteId;
     }
 
     public void setFeedbackpacienteId(UUID feedbackpacienteId) {
         this.feedbackpacienteId = feedbackpacienteId;
-    }
-
-    public UUID getPacienteId() {
-        return pacienteId;
-    }
-
-    public void setPacienteId(UUID pacienteId) {
-        this.pacienteId = pacienteId;
-    }
-
-    public UUID getTriagemId() {
-        return triagemId;
-    }
-
-    public void setTriagemId(UUID triagemId) {
-        this.triagemId = triagemId;
     }
 
     public LocalDateTime getDataFeedback() {
@@ -100,5 +89,21 @@ public class FeedbackPacienteModel {
 
     public void setDataAlteracao(LocalDateTime dataAlteracao) {
         this.dataAlteracao = dataAlteracao;
+    }
+
+    public PacienteModel getPaciente() {
+        return paciente;
+    }
+
+    public void setPaciente(PacienteModel paciente) {
+        this.paciente = paciente;
+    }
+
+    public TriagemModel getTriagem() {
+        return triagem;
+    }
+
+    public void setTriagem(TriagemModel triagem) {
+        this.triagem = triagem;
     }
 }

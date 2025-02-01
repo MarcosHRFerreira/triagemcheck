@@ -3,6 +3,7 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.services.PacienteService;
+import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
 import br.com.TriagemCheck.validations.TriagemValidator;
 import org.apache.logging.log4j.LogManager;
@@ -25,14 +26,17 @@ public class TriagemController {
     final TriagemService triagemService;
     final TriagemValidator triagemValidator;
     final PacienteService pacienteService;
+    final ProfissionalService profissionalService;
 
-    public TriagemController(TriagemService triagemService, TriagemValidator triagemValidator, PacienteService pacienteService) {
+    public TriagemController(TriagemService triagemService, TriagemValidator triagemValidator, PacienteService pacienteService, ProfissionalService profissionalService) {
         this.triagemService = triagemService;
         this.triagemValidator = triagemValidator;
         this.pacienteService = pacienteService;
+        this.profissionalService = profissionalService;
     }
-    @PostMapping("/pacientes/{pacienteId}/triagens")
+    @PostMapping("/pacientes/{pacienteId}/profissionais/{profissionalId}/triagens")
     public ResponseEntity<Object> savarTriagem(@PathVariable(value = "pacienteId") UUID pacienteId,
+                                               @PathVariable(value="profissionalId") UUID profissionalId,
             @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
 
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
@@ -41,9 +45,10 @@ public class TriagemController {
         if(errors.hasErrors()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
-          return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.salvar(triagemRecordDto,pacienteService.findById(pacienteId).get()));
 
+          return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.salvar(triagemRecordDto,
+                  pacienteService.findById(pacienteId).get(),
+                  profissionalService.findById(profissionalId).get()));
 
-        //  return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.salvar(triagemRecordDto));
     }
 }

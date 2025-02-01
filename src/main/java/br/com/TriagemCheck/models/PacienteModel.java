@@ -58,12 +58,16 @@ public class PacienteModel implements Serializable {
     @Column(length = 250)
     private String  medicacaoContinua;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
+    @Fetch(FetchMode.SUBSELECT)
+    private Set<TriagemModel> triagens;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "paciente", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
+    private Set<FeedbackPacienteModel> feedbackpaciente;
 
-    private Set<TriagemModel> triagens;
 
     public LocalDate getDtnascimento() {
         return dtnascimento;
@@ -209,4 +213,14 @@ public class PacienteModel implements Serializable {
     public void setTriagens(Set<TriagemModel> triagens) {
         this.triagens = triagens;
     }
+
+    public Set<FeedbackPacienteModel> getFeedbackpaciente() {
+        return feedbackpaciente;
+    }
+
+    public void setFeedbackpaciente(Set<FeedbackPacienteModel> feedbackpaciente) {
+        this.feedbackpaciente = feedbackpaciente;
+    }
+
+
 }

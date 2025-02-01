@@ -1,6 +1,7 @@
 package br.com.TriagemCheck.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,6 @@ public class ResultClinicosModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID resultadoId;
 
-    @Column(nullable = false)
-    private UUID triagemId;
     @Column(length = 250)
     private String diagnostico;
     @Column(length = 250)
@@ -26,11 +25,18 @@ public class ResultClinicosModel {
     @Column(length = 250)
     private String desfecho;
     @Column(nullable = false)
-    private UUID profissionalId;
-    @Column(nullable = false)
     private LocalDateTime dataCriacao;
     @Column(nullable = false)
     private LocalDateTime  dataAlteracao;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private TriagemModel triagem;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    private ProfissionalModel profissional;
+
 
     public UUID getResultadoId() {
         return resultadoId;
@@ -38,14 +44,6 @@ public class ResultClinicosModel {
 
     public void setResultadoId(UUID resultadoId) {
         this.resultadoId = resultadoId;
-    }
-
-    public UUID getTriagemId() {
-        return triagemId;
-    }
-
-    public void setTriagemId(UUID triagemId) {
-        this.triagemId = triagemId;
     }
 
     public String getDiagnostico() {
@@ -72,14 +70,6 @@ public class ResultClinicosModel {
         this.desfecho = desfecho;
     }
 
-    public UUID getProfissionalId() {
-        return profissionalId;
-    }
-
-    public void setProfissionalId(UUID profissionalId) {
-        this.profissionalId = profissionalId;
-    }
-
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }
@@ -94,5 +84,21 @@ public class ResultClinicosModel {
 
     public void setDataAlteracao(LocalDateTime dataAlteracao) {
         this.dataAlteracao = dataAlteracao;
+    }
+
+    public TriagemModel getTriagem() {
+        return triagem;
+    }
+
+    public void setTriagem(TriagemModel triagem) {
+        this.triagem = triagem;
+    }
+
+    public ProfissionalModel getProfissional() {
+        return profissional;
+    }
+
+    public void setProfissional(ProfissionalModel profissional) {
+        this.profissional = profissional;
     }
 }
