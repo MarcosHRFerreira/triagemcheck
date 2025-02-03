@@ -2,6 +2,7 @@ package br.com.TriagemCheck.services.impl;
 
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
+import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
@@ -44,7 +45,7 @@ public class TriagemServiceImpl implements TriagemService {
     public Optional<TriagemModel> findById(UUID triagemId){
         Optional<TriagemModel> triagemModelOptional = triagemRepository.findById(triagemId);
         if(triagemModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Triagem não encontrado.");
+            throw new NotFoundException("Erro: Triagem not found.");
         }
         return triagemModelOptional;
     }
@@ -53,4 +54,25 @@ public class TriagemServiceImpl implements TriagemService {
     public Page<TriagemModel> findAll(Specification<TriagemModel> spec, Pageable pageable) {
         return triagemRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<TriagemModel> findPacienteProfissionalInTriagem(UUID pacienteId, UUID profissionalId, UUID triagemId) {
+        Optional<TriagemModel> triagemModelOptional=
+        triagemRepository.findPacienteProfissionalInTriagem(pacienteId,profissionalId,triagemId );
+        if(triagemModelOptional.isEmpty()){
+            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId   not found for this TB_TRIAGENS.");
+        }
+        return triagemModelOptional;
+    }
+
+    @Override
+    public TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel) {
+       BeanUtils.copyProperties(triagemRecordDto,triagemModel);
+       triagemModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+       return  triagemRepository.save(triagemModel);
+
+    }
+
+
 }

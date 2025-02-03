@@ -2,7 +2,6 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
-import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.services.FeedbackPacienteService;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.TriagemService;
@@ -38,8 +37,8 @@ public class FeedbackPacienteController {
         this.pacienteService = pacienteService;
     }
     @PostMapping("/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-    public ResponseEntity<Object> save(@PathVariable(value = "pacienteId") UUID pacienteId,
-                                                         @PathVariable(value="triagemId") UUID triagemId,
+    public ResponseEntity<Object> save(@PathVariable(value ="pacienteId") UUID pacienteId,
+                                       @PathVariable(value="triagemId") UUID triagemId,
             @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
@@ -61,6 +60,25 @@ public class FeedbackPacienteController {
                 ? feedbackPacienteService.findAll(SpecificationTemplate.feedbackpacienteId(feedbackpacienteId).and(spec), pageable)
                 : feedbackPacienteService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackpacienteModelPage);
+    }
+
+    @GetMapping("/{feedbackpacienteId}")
+    public ResponseEntity<Object> getOne(@PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
+        return ResponseEntity.status(HttpStatus.OK).body(feedbackPacienteService.findById(feedbackpacienteId).get());
+    }
+
+
+    @PutMapping("/{feedbackpacienteId}/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
+    public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
+                                               @PathVariable(value="triagemId") UUID triagemId,
+                                               @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
+                                               @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
+
+        logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(feedbackPacienteService.update(feedbackPacienteRecordDto, feedbackPacienteService.
+                        findPacienteTriagemInFeedback(pacienteId, triagemId,feedbackpacienteId).get()));
     }
 
 }

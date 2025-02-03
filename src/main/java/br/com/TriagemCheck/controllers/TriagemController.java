@@ -1,8 +1,6 @@
 package br.com.TriagemCheck.controllers;
 
-
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.ProfissionalService;
@@ -63,6 +61,24 @@ public class TriagemController {
                 ? triagemService.findAll(SpecificationTemplate.triagemId(triagemId).and(spec), pageable)
                 : triagemService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(triagemModelPage);
+    }
+
+    @GetMapping("/{triagemId}")
+    public ResponseEntity<Object> getOne(@PathVariable(value = "triagemId") UUID triagemId){
+        return ResponseEntity.status(HttpStatus.OK).body(triagemService.findById(triagemId).get());
+    }
+
+    @PutMapping("/{triagemId}/pacientes/{pacienteId}/profissionais/{profissionalId}/triagem")
+    public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
+                                         @PathVariable(value="profissionalId") UUID profissionalId,
+                                         @PathVariable(value="triagemId") UUID triagemId,
+                                         @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
+
+        logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(triagemService.update(triagemRecordDto, triagemService.
+                        findPacienteProfissionalInTriagem(pacienteId,profissionalId, triagemId).get()));
     }
 
 

@@ -1,6 +1,8 @@
 package br.com.TriagemCheck.services.impl;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
+import br.com.TriagemCheck.exceptions.NotFoundException;
+import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.models.TriagemModel;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ResultClinicoServiceImpl implements ResultClinicoService {
@@ -41,6 +45,36 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     public Page<ResultClinicosModel> findAll(Specification<ResultClinicosModel> specification, Pageable pageable) {
         return resultClinicoRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<ResultClinicosModel> findById(UUID resultadoId){
+        Optional<ResultClinicosModel> resultClinicosModelOptional = resultClinicoRepository.findById(resultadoId);
+        if(resultClinicosModelOptional.isEmpty()){
+            throw new NotFoundException("Erro: Resultdo Clinico not found.");
+        }
+        return resultClinicosModelOptional;
+    }
+
+    @Override
+    public Optional<ResultClinicosModel> findProfissionalTriagemInResultClinico(UUID profissionalId, UUID triagemId, UUID resultadoId) {
+       Optional<ResultClinicosModel> resultClinicosModelOptional=
+               resultClinicoRepository.findProfissionalTriagemInResultClinico(profissionalId, triagemId, resultadoId) ;
+        if(resultClinicosModelOptional.isEmpty()){
+            throw new NotFoundException("Error: profissionalId, triagemId  not found for this TB_RESULTCLINICOS.");
+        }
+        return resultClinicosModelOptional;
+    }
+
+    @Override
+    public ResultClinicosModel update(ResultClinicoRecordDto resultClinicoRecordDto, ResultClinicosModel resultClinicosModel) {
+       BeanUtils.copyProperties(resultClinicoRecordDto,resultClinicosModel);
+       resultClinicosModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+       return  resultClinicoRepository.save(resultClinicosModel);
+
+    }
+
+
 }
 
 

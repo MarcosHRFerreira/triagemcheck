@@ -52,7 +52,7 @@ public class PacienteServiceImpl implements PacienteService {
     public Optional<PacienteModel> findById(UUID pacienteId){
         Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
         if(pacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Paciente não encontrado.");
+            throw new NotFoundException("Erro: Paciente not found.");
         }
         return pacienteModelOptional;
     }

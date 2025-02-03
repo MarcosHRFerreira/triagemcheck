@@ -1,7 +1,9 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
+import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.repositories.ProfissionalRepository;
 import br.com.TriagemCheck.services.ProfissionalService;
@@ -46,7 +48,7 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     public Optional<ProfissionalModel> findById(UUID profissionalId){
         Optional<ProfissionalModel> profissionalModelOptional = profissionalRepository.findById(profissionalId);
         if(profissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Profissional não encontrado.");
+            throw new NotFoundException("Erro: Profissional not found.");
         }
         return profissionalModelOptional;
     }
@@ -55,5 +57,14 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     public Page<ProfissionalModel> findAll(Specification<ProfissionalModel> spec, Pageable pageable) {
         return profissionalRepository.findAll(pageable);
     }
+
+    @Override
+    public ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel) {
+       BeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
+       profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+       return  profissionalRepository.save(profissionalModel);
+    }
+
+
 
 }

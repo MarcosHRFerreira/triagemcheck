@@ -1,12 +1,14 @@
 package br.com.TriagemCheck.controllers;
 
 
+import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.ProfissionalValidator;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,22 @@ public class ProfissionalController {
                 : profissionalService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(profissionalModelPage);
     }
+
+    @GetMapping("/{profissionalId}")
+    public ResponseEntity<Object> getOne(@PathVariable(value = "profissionalId") UUID profissionalId){
+        return ResponseEntity.status(HttpStatus.OK).body(profissionalService.findById(profissionalId).get());
+    }
+
+    @PutMapping("/{profissionalId}")
+    public ResponseEntity<Object> update(@PathVariable(value = "profissionalId") UUID profissionalId,
+                                         @RequestBody @Valid ProfissionalRecordDto profissionalRecordDto){
+        logger.debug("PUT update  profissionalRecordDto received {} ", profissionalRecordDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(profissionalService.update(profissionalRecordDto, profissionalService.findById(profissionalId).get()));
+
+    }
+
 
 
 }

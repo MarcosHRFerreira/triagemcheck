@@ -19,4 +19,9 @@ public interface TriagemService {
     Optional<TriagemModel> findById(UUID triagemId);
 
     Page<TriagemModel> findAll(Specification<TriagemModel> spec, Pageable pageable);
+
+    Optional<TriagemModel> findPacienteProfissionalInTriagem(UUID pacienteId, UUID profissionalId, UUID triagemId);
+
+    TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel);
+
 }

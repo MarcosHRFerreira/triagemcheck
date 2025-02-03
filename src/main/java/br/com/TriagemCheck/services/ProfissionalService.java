@@ -18,4 +18,6 @@ public interface ProfissionalService {
     Optional<ProfissionalModel> findById(UUID profissionalId);
 
     Page<ProfissionalModel> findAll(Specification<ProfissionalModel> spec, Pageable pageable);
+
+    ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel);
 }

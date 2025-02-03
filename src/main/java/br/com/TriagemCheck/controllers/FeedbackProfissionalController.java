@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.controllers;
 
+import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
@@ -36,7 +37,7 @@ public class FeedbackProfissionalController {
         this.profissionalService = profissionalService;
         this.triagemService = triagemService;
     }
-    @PostMapping("/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
+    @PostMapping("/{profissionais}/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
     public ResponseEntity<Object>saveFeedbackProfissional(@PathVariable(value = "profissionalId") UUID profissionalId,
                                                           @PathVariable(value="triagemId") UUID triagemId,
             @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
@@ -62,5 +63,28 @@ public class FeedbackProfissionalController {
                 : feedbackProfissionalService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalModelPage);
     }
+
+    @GetMapping("/{feedbackprofissionalId}")
+    public ResponseEntity<Object> getOne(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
+        return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalService.findById(feedbackprofissionalId).get());
+    }
+
+
+
+    @PutMapping("/{feedbackprofissionalId}/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
+    public ResponseEntity<Object> updateFeedBackProfissional(@PathVariable(value ="profissionalId") UUID profissionalId,
+                                                         @PathVariable(value="triagemId") UUID triagemId,
+                                                         @PathVariable(value="feedbackprofissionalId") UUID feedbackprofissionalId,
+                                                         @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
+
+        logger.debug("PUT updateFeedBackProfissional FeedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, feedbackProfissionalService.
+                        findProfissionalTriagemInFeedback(profissionalId, triagemId,feedbackprofissionalId).get()));
+    }
+
+
+
 
 }

@@ -1,6 +1,9 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
+import br.com.TriagemCheck.exceptions.NotFoundException;
+import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalService {
@@ -46,4 +51,38 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     public Page<FeedbackProfissionalModel> findAll(Specification<FeedbackProfissionalModel> spec, Pageable pageable) {
         return feedbackProfissionalRepository.findAll(pageable);
     }
+
+
+    @Override
+    public Optional<FeedbackProfissionalModel> findById(UUID feedbackprofissionalId) {
+        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = feedbackProfissionalRepository.findById(feedbackprofissionalId);
+        if(feedbackProfissionalModelOptional.isEmpty()){
+            throw new NotFoundException("Error: FeedbackProfissional not found.");
+        }
+        return feedbackProfissionalModelOptional;
+    }
+
+
+    @Override
+    public Optional<FeedbackProfissionalModel> findProfissionalTriagemInFeedback(UUID profissionalId, UUID triagemId, UUID feedbackprofissionalId) {
+        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
+                feedbackProfissionalRepository.findProssionalTriagemInFeedback(profissionalId,triagemId,feedbackprofissionalId );
+        if(feedbackProfissionalModelOptional.isEmpty()){
+            throw new NotFoundException("Error: profissionalId, triagemId  not found for this TB_FEEDBACKPROFISSIONAL.");
+        }
+        return feedbackProfissionalModelOptional;
+    }
+
+    @Override
+    public FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto,
+                                            FeedbackProfissionalModel feedbackProfissionalModel) {
+        BeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackProfissionalModel);
+        feedbackProfissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+        return  feedbackProfissionalRepository.save(feedbackProfissionalModel);
+    }
+
+
+
+
 }

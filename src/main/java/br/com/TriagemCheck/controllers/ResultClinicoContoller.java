@@ -1,6 +1,7 @@
 package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
+import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.services.ProfissionalService;
@@ -62,6 +63,25 @@ public class ResultClinicoContoller {
                 ? resultClinicoService.findAll(SpecificationTemplate.resultadoId(resultadoId).and(spec), pageable)
                 : resultClinicoService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(resultClinicosModelPage);
+    }
+
+
+    @GetMapping("/{resultadoId}")
+    public ResponseEntity<Object> getOne(@PathVariable(value = "resultadoId") UUID resultadoId){
+        return ResponseEntity.status(HttpStatus.OK).body(resultClinicoService.findById(resultadoId).get());
+    }
+
+    @PutMapping("/{resultadoId}/profissionais/{profissionalId}/triagens/{triagemId}/resultado")
+    public ResponseEntity<Object> update(@PathVariable(value ="profissionalId") UUID profissionalId,
+                                         @PathVariable(value="triagemId") UUID triagemId,
+                                         @PathVariable(value="resultadoId") UUID resultadoId,
+                                         @RequestBody ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
+
+        logger.debug("PUT resultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(resultClinicoService.update(resultClinicoRecordDto, resultClinicoService.
+                        findProfissionalTriagemInResultClinico(profissionalId,triagemId, resultadoId).get()));
     }
 
 
