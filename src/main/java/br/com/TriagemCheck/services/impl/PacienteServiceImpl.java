@@ -27,7 +27,7 @@ public class PacienteServiceImpl implements PacienteService {
 
 
     @Override
-    public PacienteModel salva(PacienteRecordDto pacienteRecordDto) {
+    public PacienteModel save(PacienteRecordDto pacienteRecordDto) {
 
         var pacienteModel=new PacienteModel();
         BeanUtils.copyProperties(pacienteRecordDto,pacienteModel);
@@ -59,7 +59,7 @@ public class PacienteServiceImpl implements PacienteService {
 
 
     @Override
-    public PacienteModel altera(PacienteRecordDto pacienteRecordDto, PacienteModel pacienteModel) {
+    public PacienteModel update(PacienteRecordDto pacienteRecordDto, PacienteModel pacienteModel) {
         BeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
         pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
         return pacienteRepository.save(pacienteModel);

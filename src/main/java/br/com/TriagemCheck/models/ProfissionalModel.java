@@ -17,8 +17,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name="TB_PROFISSIONAIS")
-public class ProfissionalModel implements Serializable {
-
+public class ProfissionalModel implements Serializable  {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -57,7 +56,7 @@ public class ProfissionalModel implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "profissional", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    private Set<ResultClinicosModel> feedbackprofissional;
+    private Set<FeedbackProfissionalModel> feedbackprofissional;
 
 
     public UUID getProfissionalId() {
@@ -148,11 +147,11 @@ public class ProfissionalModel implements Serializable {
         this.resultclinico = resultclinico;
     }
 
-    public Set<ResultClinicosModel> getFeedbackprofissional() {
+    public Set<FeedbackProfissionalModel> getFeedbackprofissional() {
         return feedbackprofissional;
     }
 
-    public void setFeedbackprofissional(Set<ResultClinicosModel> feedbackprofissional) {
+    public void setFeedbackprofissional(Set<FeedbackProfissionalModel> feedbackprofissional) {
         this.feedbackprofissional = feedbackprofissional;
     }
 }

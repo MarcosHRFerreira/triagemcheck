@@ -32,7 +32,7 @@ public class PacienteController {
         this.pacienteValidator = pacienteValidator;
     }
     @PostMapping
-    public ResponseEntity<Object>salvarPaciente(@RequestBody PacienteRecordDto pacienteRecordDto, Errors errors){
+    public ResponseEntity<Object>save(@RequestBody PacienteRecordDto pacienteRecordDto, Errors errors){
 
         logger.debug("POST savePaciente pacienteRecordDto recebido {} ", pacienteRecordDto);
 
@@ -40,11 +40,11 @@ public class PacienteController {
         if(errors.hasErrors()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(pacienteService.salva(pacienteRecordDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(pacienteService.save(pacienteRecordDto));
 
     }
     @GetMapping
-    public ResponseEntity<Page<PacienteModel>> selecionarTodosPacientes(SpecificationTemplate.PacienteSpec spec,
+    public ResponseEntity<Page<PacienteModel>> getAll(SpecificationTemplate.PacienteSpec spec,
                                                                        Pageable pageable,
                                                                        @RequestParam(required = false) UUID pacienteId){
         Page<PacienteModel> pacienteModelPage = (pacienteId != null)
@@ -53,16 +53,16 @@ public class PacienteController {
         return ResponseEntity.status(HttpStatus.OK).body(pacienteModelPage);
     }
     @PutMapping("/{pacienteId}")
-    public ResponseEntity<Object> alterarPaciente(@PathVariable(value = "pacienteId") UUID pacienteId,
+    public ResponseEntity<Object> update(@PathVariable(value = "pacienteId") UUID pacienteId,
                                                   @RequestBody @Valid PacienteRecordDto pacienteRecordDto){
         logger.debug("PUT alterarPaciente  pacienteRecordDto received {} ", pacienteRecordDto);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .body(pacienteService.altera(pacienteRecordDto, pacienteService.findById(pacienteId).get()));
+                .body(pacienteService.update(pacienteRecordDto, pacienteService.findById(pacienteId).get()));
 
     }
     @GetMapping("/{pacienteId}")
-    public ResponseEntity<Object> buscarPacienteID(@PathVariable(value = "pacienteId") UUID pacienteId){
+    public ResponseEntity<Object> getOne(@PathVariable(value = "pacienteId") UUID pacienteId){
         return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findById(pacienteId).get());
     }
 

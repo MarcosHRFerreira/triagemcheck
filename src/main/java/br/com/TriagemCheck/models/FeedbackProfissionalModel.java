@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name="TB_FEEDBACKPROFISSIONAL")
-public class FeedbackProfissionalModel {
-
+public class FeedbackProfissionalModel  implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -35,7 +35,7 @@ public class FeedbackProfissionalModel {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private ProfissionalModel feedbackprofissional;
+    private ProfissionalModel profissional;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -91,12 +91,12 @@ public class FeedbackProfissionalModel {
         this.dataAlteracao = dataAlteracao;
     }
 
-    public ProfissionalModel getFeedbackprofissional() {
-        return feedbackprofissional;
+    public ProfissionalModel getProfissional() {
+        return profissional;
     }
 
-    public void setFeedbackprofissional(ProfissionalModel feedbackprofissional) {
-        this.feedbackprofissional = feedbackprofissional;
+    public void setProfissional(ProfissionalModel profissional) {
+        this.profissional = profissional;
     }
 
     public TriagemModel getTriagem() {

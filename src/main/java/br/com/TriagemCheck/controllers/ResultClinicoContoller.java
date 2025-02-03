@@ -1,12 +1,17 @@
 package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
+import br.com.TriagemCheck.models.ProfissionalModel;
+import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.ResultClinicoService;
 import br.com.TriagemCheck.services.TriagemService;
+import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.ResultClinicoValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -48,4 +53,16 @@ public class ResultClinicoContoller {
                 triagemService.findById(triagemId).get(),
                 profissionalService.findById(profissionalId).get()));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<ResultClinicosModel>> getAll(SpecificationTemplate.ResultClinicoSpec spec,
+                                                            Pageable pageable,
+                                                            @RequestParam(required = false) UUID resultadoId){
+        Page<ResultClinicosModel>  resultClinicosModelPage = (resultadoId != null)
+                ? resultClinicoService.findAll(SpecificationTemplate.resultadoId(resultadoId).and(spec), pageable)
+                : resultClinicoService.findAll(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(resultClinicosModelPage);
+    }
+
+
 }

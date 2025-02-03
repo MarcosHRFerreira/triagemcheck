@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PacienteService {
-    PacienteModel salva(PacienteRecordDto pacienteRecordDto);
+    PacienteModel save(PacienteRecordDto pacienteRecordDto);
 
       boolean existsBycpf(String cpf);
 
@@ -18,6 +18,6 @@ public interface PacienteService {
 
     Optional<PacienteModel> findById(UUID pacienteId);
 
-    PacienteModel altera(PacienteRecordDto pacienteRecordDto,PacienteModel pacienteModel);
+    PacienteModel update(PacienteRecordDto pacienteRecordDto,PacienteModel pacienteModel);
 
 }

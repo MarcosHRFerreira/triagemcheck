@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name="TB_FEEDBACKPACIENTES")
-public class FeedbackPacienteModel {
-
+public class FeedbackPacienteModel  implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

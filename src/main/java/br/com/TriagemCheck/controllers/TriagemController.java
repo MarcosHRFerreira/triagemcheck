@@ -2,23 +2,26 @@ package br.com.TriagemCheck.controllers;
 
 
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
+import br.com.TriagemCheck.models.ResultClinicosModel;
+import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
+import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.TriagemValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/triagens")
 public class TriagemController {
 
     Logger logger = LogManager.getLogger(TriagemController.class);
@@ -46,9 +49,21 @@ public class TriagemController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
 
-          return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.salvar(triagemRecordDto,
+          return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.save(triagemRecordDto,
                   pacienteService.findById(pacienteId).get(),
                   profissionalService.findById(profissionalId).get()));
 
     }
+
+    @GetMapping
+    public ResponseEntity<Page<TriagemModel>> getAll(SpecificationTemplate.TriagemSpec spec,
+                                                     Pageable pageable,
+                                                     @RequestParam(required = false) UUID triagemId){
+        Page<TriagemModel>  triagemModelPage = (triagemId != null)
+                ? triagemService.findAll(SpecificationTemplate.triagemId(triagemId).and(spec), pageable)
+                : triagemService.findAll(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(triagemModelPage);
+    }
+
+
 }

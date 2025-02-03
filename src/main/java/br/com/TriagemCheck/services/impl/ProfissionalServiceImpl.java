@@ -6,6 +6,9 @@ import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.repositories.ProfissionalRepository;
 import br.com.TriagemCheck.services.ProfissionalService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,7 +26,7 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     }
 
     @Override
-    public ProfissionalModel salvar(ProfissionalRecordDto profissionalRecordDto) {
+    public ProfissionalModel save(ProfissionalRecordDto profissionalRecordDto) {
 
         var profissionalModel = new ProfissionalModel();
         BeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
@@ -46,6 +49,11 @@ public class ProfissionalServiceImpl implements ProfissionalService {
             throw new NotFoundException("Erro: Profissional não encontrado.");
         }
         return profissionalModelOptional;
+    }
+
+    @Override
+    public Page<ProfissionalModel> findAll(Specification<ProfissionalModel> spec, Pageable pageable) {
+        return profissionalRepository.findAll(pageable);
     }
 
 }

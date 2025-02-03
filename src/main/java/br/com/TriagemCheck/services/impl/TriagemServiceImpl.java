@@ -8,6 +8,9 @@ import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.TriagemService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,7 +28,7 @@ public class TriagemServiceImpl implements TriagemService {
     }
 
     @Override
-    public TriagemModel salvar(TriagemRecordDto triagemRecordDto, PacienteModel pacienteModel, ProfissionalModel profissionalModel) {
+    public TriagemModel save(TriagemRecordDto triagemRecordDto, PacienteModel pacienteModel, ProfissionalModel profissionalModel) {
 
         var triagemModel = new TriagemModel();
         BeanUtils.copyProperties(triagemRecordDto, triagemModel);
@@ -44,5 +47,10 @@ public class TriagemServiceImpl implements TriagemService {
             throw new NotFoundException("Erro: Triagem não encontrado.");
         }
         return triagemModelOptional;
+    }
+
+    @Override
+    public Page<TriagemModel> findAll(Specification<TriagemModel> spec, Pageable pageable) {
+        return triagemRepository.findAll(pageable);
     }
 }

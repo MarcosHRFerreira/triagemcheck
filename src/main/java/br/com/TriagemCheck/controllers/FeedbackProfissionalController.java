@@ -1,17 +1,23 @@
 package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
+import br.com.TriagemCheck.models.FeedbackPacienteModel;
+import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.services.FeedbackProfissionalService;
+import br.com.TriagemCheck.services.ProfissionalService;
+import br.com.TriagemCheck.services.TriagemService;
+import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.FeedbackProfissionalValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/feedbackprofissionais")
@@ -21,13 +27,19 @@ public class FeedbackProfissionalController {
 
     final FeedbackProfissionalService feedbackProfissionalService;
     final FeedbackProfissionalValidator feedbackProfissionalValidator;
+    final ProfissionalService profissionalService;
+    final TriagemService triagemService;
 
-    public FeedbackProfissionalController(FeedbackProfissionalService feedbackProfissionalService, FeedbackProfissionalValidator feedbackProfissionalValidator) {
+    public FeedbackProfissionalController(FeedbackProfissionalService feedbackProfissionalService, FeedbackProfissionalValidator feedbackProfissionalValidator, ProfissionalService profissionalService, TriagemService triagemService) {
         this.feedbackProfissionalService = feedbackProfissionalService;
         this.feedbackProfissionalValidator = feedbackProfissionalValidator;
+        this.profissionalService = profissionalService;
+        this.triagemService = triagemService;
     }
-    @PostMapping
-    public ResponseEntity<Object>saveFeedbackProfissional(@RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
+    @PostMapping("/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
+    public ResponseEntity<Object>saveFeedbackProfissional(@PathVariable(value = "profissionalId") UUID profissionalId,
+                                                          @PathVariable(value="triagemId") UUID triagemId,
+            @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
 
         logger.debug("POST saveFeedbackProfissional feedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 
@@ -36,6 +48,19 @@ public class FeedbackProfissionalController {
         if(errors.hasErrors()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackProfissionalService.salvar(feedbackProfissionalRecordDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackProfissionalService.save(feedbackProfissionalRecordDto,
+                profissionalService.findById(profissionalId).get(),
+                triagemService.findById(triagemId).get()));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<FeedbackProfissionalModel>> getAll(SpecificationTemplate.FeedbackprofissionalSpec spec,
+                                                                  Pageable pageable,
+                                                                  @RequestParam(required = false) UUID feedbackprofissionalId){
+        Page<FeedbackProfissionalModel>  feedbackProfissionalModelPage = (feedbackprofissionalId != null)
+                ? feedbackProfissionalService.findAll(SpecificationTemplate.feedbackprofissionalId(feedbackprofissionalId).and(spec), pageable)
+                : feedbackProfissionalService.findAll(spec, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalModelPage);
+    }
+
 }

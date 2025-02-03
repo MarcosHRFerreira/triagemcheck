@@ -7,6 +7,9 @@ import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.repositories.ResultClinicoRepository;
 import br.com.TriagemCheck.services.ResultClinicoService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,6 +35,11 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
         resultClinicoModel.setTriagem((triagemModel));
 
         return resultClinicoRepository.save(resultClinicoModel);
+    }
+
+    @Override
+    public Page<ResultClinicosModel> findAll(Specification<ResultClinicosModel> specification, Pageable pageable) {
+        return resultClinicoRepository.findAll(pageable);
     }
 }
 
