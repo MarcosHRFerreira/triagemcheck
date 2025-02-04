@@ -72,7 +72,7 @@ public class FeedbackPacienteController {
     public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
                                                @PathVariable(value="triagemId") UUID triagemId,
                                                @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
-                                               @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
+                                               @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto){
 
         logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
 
@@ -80,5 +80,15 @@ public class FeedbackPacienteController {
                 .body(feedbackPacienteService.update(feedbackPacienteRecordDto, feedbackPacienteService.
                         findPacienteTriagemInFeedback(pacienteId, triagemId,feedbackpacienteId).get()));
     }
+
+    @DeleteMapping("/{feedbackpacienteId}")
+    public ResponseEntity<Object> delete(@PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
+        logger.debug("DELETE delete FeedbackPacientes feedbackpacienteId received {} ", feedbackpacienteId);
+        feedbackPacienteService.delete(feedbackPacienteService.findById(feedbackpacienteId).get());
+        return ResponseEntity.status(HttpStatus.OK).body("FeedBack Paciente deleted successfully.");
+    }
+
+
+
 
 }

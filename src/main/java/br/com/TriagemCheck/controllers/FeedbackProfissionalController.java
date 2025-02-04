@@ -75,7 +75,7 @@ public class FeedbackProfissionalController {
     public ResponseEntity<Object> updateFeedBackProfissional(@PathVariable(value ="profissionalId") UUID profissionalId,
                                                          @PathVariable(value="triagemId") UUID triagemId,
                                                          @PathVariable(value="feedbackprofissionalId") UUID feedbackprofissionalId,
-                                                         @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
+                                                         @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto){
 
         logger.debug("PUT updateFeedBackProfissional FeedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 
@@ -84,7 +84,12 @@ public class FeedbackProfissionalController {
                         findProfissionalTriagemInFeedback(profissionalId, triagemId,feedbackprofissionalId).get()));
     }
 
-
+    @DeleteMapping("/{feedbackprofissionalId}")
+    public ResponseEntity<Object> delete(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
+        logger.debug("DELETE delete FeedbackProfissionais feedbackprofissionalId received {} ", feedbackprofissionalId);
+        feedbackProfissionalService.delete(feedbackProfissionalService.findById(feedbackprofissionalId).get());
+        return ResponseEntity.status(HttpStatus.OK).body("FeedBack Paciente deleted successfully.");
+    }
 
 
 }

@@ -72,7 +72,7 @@ public class TriagemController {
     public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
                                          @PathVariable(value="profissionalId") UUID profissionalId,
                                          @PathVariable(value="triagemId") UUID triagemId,
-                                         @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
+                                         @RequestBody TriagemRecordDto triagemRecordDto){
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 

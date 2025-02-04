@@ -20,4 +20,5 @@ public interface PacienteService {
 
     PacienteModel update(PacienteRecordDto pacienteRecordDto,PacienteModel pacienteModel);
 
+    void delete(PacienteModel pacienteModel);
 }

@@ -22,4 +22,6 @@ public interface FeedbackPacienteService {
     Optional<FeedbackPacienteModel> findPacienteTriagemInFeedback(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId) ;
 
     FeedbackPacienteModel update(FeedbackPacienteRecordDto feedbackPacienteRecordDto, FeedbackPacienteModel feedbackPacienteModel);
+
+    void delete(FeedbackPacienteModel feedbackPacienteModel);
 }

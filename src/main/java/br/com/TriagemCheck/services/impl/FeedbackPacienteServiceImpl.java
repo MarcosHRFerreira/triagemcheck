@@ -76,4 +76,9 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
 
         return  feedbackPacienteRepository.save(feedbackPacienteModel);
     }
+
+    @Override
+    public void delete(FeedbackPacienteModel feedbackPacienteModel) {
+        feedbackPacienteRepository.delete(feedbackPacienteModel);
+    }
 }

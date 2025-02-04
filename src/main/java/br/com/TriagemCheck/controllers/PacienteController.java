@@ -66,4 +66,12 @@ public class PacienteController {
         return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findById(pacienteId).get());
     }
 
+    @DeleteMapping("/{pacienteId}")
+    public ResponseEntity<Object> delete(@PathVariable(value = "pacienteId") UUID pacienteId){
+        logger.debug("Delete Paciente received {} ", pacienteId);
+        pacienteService.delete(pacienteService.findById(pacienteId).get());
+        return ResponseEntity.status(HttpStatus.OK).body("Paciente deleted successfully.");
+    }
+
+
 }

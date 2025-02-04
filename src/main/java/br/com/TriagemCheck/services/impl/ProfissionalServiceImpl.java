@@ -3,9 +3,9 @@ package br.com.TriagemCheck.services.impl;
 import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
-import br.com.TriagemCheck.models.PacienteModel;
-import br.com.TriagemCheck.models.ProfissionalModel;
+import br.com.TriagemCheck.models.*;
 import br.com.TriagemCheck.repositories.ProfissionalRepository;
+import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.ProfissionalService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,9 +23,12 @@ import java.util.UUID;
 public class ProfissionalServiceImpl implements ProfissionalService {
 
     final ProfissionalRepository profissionalRepository;
+    private final TriagemRepository triagemRepository;
 
-    public ProfissionalServiceImpl(ProfissionalRepository profissionalRepository) {
+    public ProfissionalServiceImpl(ProfissionalRepository profissionalRepository,
+                                   TriagemRepository triagemRepository) {
         this.profissionalRepository = profissionalRepository;
+        this.triagemRepository = triagemRepository;
     }
 
     @Override
@@ -64,7 +68,6 @@ public class ProfissionalServiceImpl implements ProfissionalService {
        profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
        return  profissionalRepository.save(profissionalModel);
     }
-
 
 
 }

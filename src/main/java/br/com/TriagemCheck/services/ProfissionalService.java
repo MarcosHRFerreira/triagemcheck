@@ -20,4 +20,6 @@ public interface ProfissionalService {
     Page<ProfissionalModel> findAll(Specification<ProfissionalModel> spec, Pageable pageable);
 
     ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel);
+
+
 }

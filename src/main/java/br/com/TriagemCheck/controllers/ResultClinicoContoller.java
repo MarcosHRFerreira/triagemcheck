@@ -75,7 +75,7 @@ public class ResultClinicoContoller {
     public ResponseEntity<Object> update(@PathVariable(value ="profissionalId") UUID profissionalId,
                                          @PathVariable(value="triagemId") UUID triagemId,
                                          @PathVariable(value="resultadoId") UUID resultadoId,
-                                         @RequestBody ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
+                                         @RequestBody ResultClinicoRecordDto resultClinicoRecordDto){
 
         logger.debug("PUT resultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 

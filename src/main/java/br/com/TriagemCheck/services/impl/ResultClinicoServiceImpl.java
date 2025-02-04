@@ -2,7 +2,6 @@ package br.com.TriagemCheck.services.impl;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
-import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.models.TriagemModel;
@@ -60,7 +59,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
        Optional<ResultClinicosModel> resultClinicosModelOptional=
                resultClinicoRepository.findProfissionalTriagemInResultClinico(profissionalId, triagemId, resultadoId) ;
         if(resultClinicosModelOptional.isEmpty()){
-            throw new NotFoundException("Error: profissionalId, triagemId  not found for this TB_RESULTCLINICOS.");
+            throw new NotFoundException("Error: resultadoId, profissionalId ou triagemId  not found for this TB_RESULTCLINICOS.");
         }
         return resultClinicosModelOptional;
     }

@@ -28,6 +28,5 @@ public interface FeedbackProfissionalService {
 
     FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, FeedbackProfissionalModel feedbackProfissionalModel);
 
-
-
+    void delete(FeedbackProfissionalModel feedbackProfissionalModel);
 }

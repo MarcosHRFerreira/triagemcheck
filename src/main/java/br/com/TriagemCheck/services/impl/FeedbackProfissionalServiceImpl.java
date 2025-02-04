@@ -82,7 +82,8 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
         return  feedbackProfissionalRepository.save(feedbackProfissionalModel);
     }
 
-
-
-
+    @Override
+    public void delete(FeedbackProfissionalModel feedbackProfissionalModel) {
+        feedbackProfissionalRepository.delete(feedbackProfissionalModel);
+    }
 }
