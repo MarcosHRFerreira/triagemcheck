@@ -1,6 +1,8 @@
 package br.com.TriagemCheck.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -55,5 +58,27 @@ public class GlobalExceptionHandler {
         logger.error("HttpMessageNotReadableException message: {} ", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorRecordResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        Set<ConstraintViolation<?>> violations = ex.getConstraintViolations();
+
+        for (ConstraintViolation<?> violation : violations) {
+            String fieldName = violation.getPropertyPath().toString();
+            String errorMessage = violation.getMessage();
+            errors.put(fieldName, errorMessage);
+        }
+
+        var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(), "Validation error", errors);
+        logger.error("ConstraintViolationException message: {} ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
+    }
+
+
+
+
+
+
 
 }

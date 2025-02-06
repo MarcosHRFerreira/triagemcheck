@@ -30,6 +30,12 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     @Override
     public FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, PacienteModel pacienteModel, TriagemModel triagemModel) {
 
+        Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
+                feedbackPacienteRepository.findPacienteTriagem(pacienteModel.getPacienteId(),triagemModel.getTriagemId() );
+        if(!feedbackPacienteModelOptional.isEmpty()){
+            throw new NotFoundException("Error: pacienteId, triagemId  found for this TB_FEEDBACKPACIENTES.");
+        }
+
         var feedbackPacienteModel = new FeedbackPacienteModel();
 
         BeanUtils.copyProperties(feedbackPacienteRecordDto,feedbackPacienteModel);

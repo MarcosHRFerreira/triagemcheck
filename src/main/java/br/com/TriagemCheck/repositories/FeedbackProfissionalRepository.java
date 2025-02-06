@@ -18,4 +18,7 @@ public interface FeedbackProfissionalRepository extends JpaRepository<FeedbackPr
 
     @Query(value="select * from TB_FEEDBACKPROFISSIONAL where triagem_triagem_id = :triagemId", nativeQuery = true)
     List<FeedbackProfissionalModel> findAllTriagensIntoFeedBackProfissional(UUID triagemId);
+
+    @Query(value="select * from TB_FEEDBACKPROFISSIONAL where  profissional_profissional_id = :profissionalId and triagem_triagem_id = :triagemId LIMIT 1", nativeQuery = true)
+    Optional<FeedbackProfissionalModel> findProfissionalTriagem(UUID profissionalId, UUID triagemId);
 }

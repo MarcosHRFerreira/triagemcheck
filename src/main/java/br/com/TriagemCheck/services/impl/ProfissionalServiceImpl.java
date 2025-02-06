@@ -1,6 +1,5 @@
 package br.com.TriagemCheck.services.impl;
 
-import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.*;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,5 +67,14 @@ public class ProfissionalServiceImpl implements ProfissionalService {
        return  profissionalRepository.save(profissionalModel);
     }
 
+    @Override
+    public void delete(ProfissionalModel profissionalModel) {
+
+        Optional<TriagemModel> triagemModelOptional = triagemRepository.findProficionalIntoTriagem(profissionalModel.getProfissionalId());
+        if (!triagemModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Existe Triagem para esse Profissional, não será permitido o Delete. ");
+        }
+        profissionalRepository.delete(profissionalModel);
+    }
 
 }

@@ -28,12 +28,21 @@ public class FeedbackProfissionalValidator implements Validator {
     public void validate(Object o, Errors errors) {
         FeedbackProfissionalRecordDto feedbackProfissionalRecordDto = (FeedbackProfissionalRecordDto) o;
         validator.validate(feedbackProfissionalRecordDto, errors);
-//        if(!errors.hasErrors()){
-//            validatePacientecpf(pacienteRecordDto, errors);
-//
-//        }
+        if(!errors.hasErrors()){
+            validateSeveridadeEficacia(feedbackProfissionalRecordDto, errors);
+        }
     }
 
-
-
+    private void validateSeveridadeEficacia(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors) {
+        if(feedbackProfissionalRecordDto.avaliacaoeficacia()<=0 || feedbackProfissionalRecordDto.avaliacaoeficacia()>6 ){
+            errors.rejectValue("avaliacaoeficacia", "FeedbackEficacia" +
+                    "SeveridadeConflict", "Avaliacao tem que ser entre 1 e 5.");
+            logger.error("Error validation Eficacia: {} ", feedbackProfissionalRecordDto.avaliacaoeficacia());
+        }
+        if(feedbackProfissionalRecordDto.avaliacaoseveridade()<=0 || feedbackProfissionalRecordDto.avaliacaoseveridade()>6 ){
+            errors.rejectValue("avaliacaoseveridade", "FeedbackEficacia" +
+                    "SeveridadeConflict", "Severidade tem que ser entre 1 e 5.");
+            logger.error("Error validation Eficacia: {} ", feedbackProfissionalRecordDto.avaliacaoseveridade());
+        }
+    }
 }

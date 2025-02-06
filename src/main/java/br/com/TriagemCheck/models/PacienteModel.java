@@ -1,11 +1,14 @@
 package br.com.TriagemCheck.models;
 
+import br.com.TriagemCheck.enums.UnidadeFederativa;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import br.com.TriagemCheck.enums.Sexo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -24,6 +27,7 @@ public class PacienteModel implements Serializable {
     private UUID pacienteId;
 
     @Column(nullable = false)
+    @CPF
 	private String cpf;
     @Column(nullable = false, length = 150)
 	private String  nome;
@@ -33,6 +37,7 @@ public class PacienteModel implements Serializable {
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
     @Column(length = 150)
+    @Email
     private String  email;
     @Column(nullable = false, length = 250)
     private String logradouro;
@@ -44,6 +49,11 @@ public class PacienteModel implements Serializable {
     private String  cep;
     @Column(nullable = false,length = 150)
     private String  cidade;
+    @Column(nullable = false,length = 2)
+
+    @Enumerated(EnumType.STRING)
+    private UnidadeFederativa uf;
+
     @Column(length = 15)
     private String  telefone1;
     @Column(length = 15)
@@ -204,6 +214,13 @@ public class PacienteModel implements Serializable {
         this.medicacaoContinua = medicacaoContinua;
     }
 
+    public UnidadeFederativa getUf() {
+        return uf;
+    }
+
+    public void setUf(UnidadeFederativa uf) {
+        this.uf = uf;
+    }
 
     public Set<TriagemModel> getTriagens() {
         return triagens;

@@ -16,4 +16,7 @@ public interface FeedbackPacienteRepository extends JpaRepository<FeedbackPacien
 
     @Query(value="select * from TB_FEEDBACKPACIENTES where triagem_triagem_id = :triagemId", nativeQuery = true)
     List<FeedbackPacienteModel> findAllTriagensIntoFeedBackPaciente(UUID triagemId);
+
+    @Query(value="select * from TB_FEEDBACKPACIENTES where  paciente_paciente_id = :pacienteId and triagem_triagem_id = :triagemId LIMIT 1", nativeQuery = true)
+    Optional<FeedbackPacienteModel> findPacienteTriagem(UUID pacienteId, UUID triagemId);
 }

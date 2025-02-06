@@ -70,6 +70,12 @@ public class ProfissionalController {
 
     }
 
+    @DeleteMapping("/{profissionalId}")
+    public ResponseEntity<Object> delete(@PathVariable(value = "profissionalId") UUID profissionalId){
+        logger.debug("Delete Profissional profissionalId received {} ", profissionalId);
+        profissionalService.delete(profissionalService.findById(profissionalId).get());
+        return ResponseEntity.status(HttpStatus.OK).body("Profissional deleted successfully.");
+    }
 
 
 }

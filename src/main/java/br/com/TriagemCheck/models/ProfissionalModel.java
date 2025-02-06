@@ -6,6 +6,7 @@ import br.com.TriagemCheck.enums.Especialidade;
 import br.com.TriagemCheck.enums.StatusOperacional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -41,6 +42,7 @@ public class ProfissionalModel implements Serializable  {
     @Column(nullable = false)
     private String telefone;
     @Column(nullable = false)
+    @Email
     private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

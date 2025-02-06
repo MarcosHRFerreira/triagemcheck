@@ -2,6 +2,9 @@ package br.com.TriagemCheck.dtos;
 
 
 import br.com.TriagemCheck.enums.Sexo;
+import br.com.TriagemCheck.enums.UnidadeFederativa;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -27,6 +30,8 @@ public record PacienteRecordDto(@NotBlank(message = "CPF Obrigatório")
                                 String  cep,
                                 @NotBlank(message = "Cidade Obrigatório")
                                 String  cidade,
+                                @NotNull(message = "UF Obrigatório")
+                                UnidadeFederativa uf,
                                 String  telefone1,
                                 String  telefone2,
                                 String observacao,

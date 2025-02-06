@@ -4,6 +4,8 @@ package br.com.TriagemCheck.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,10 +21,8 @@ public class FeedbackPacienteModel  implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID feedbackpacienteId;
 
-    @Column(nullable = false)
-    private LocalDateTime dataFeedback;
 
-    @Column(nullable = false, length = 250)
+    @Column( nullable = false, length = 250)
     private String comentario;
 
     private Integer avaliacao;
@@ -49,14 +49,6 @@ public class FeedbackPacienteModel  implements Serializable {
 
     public void setFeedbackpacienteId(UUID feedbackpacienteId) {
         this.feedbackpacienteId = feedbackpacienteId;
-    }
-
-    public LocalDateTime getDataFeedback() {
-        return dataFeedback;
-    }
-
-    public void setDataFeedback(LocalDateTime dataFeedback) {
-        this.dataFeedback = dataFeedback;
     }
 
     public String getComentario() {
@@ -91,10 +83,10 @@ public class FeedbackPacienteModel  implements Serializable {
         this.dataAlteracao = dataAlteracao;
     }
 
+
     public PacienteModel getPaciente() {
         return paciente;
     }
-
     public void setPaciente(PacienteModel paciente) {
         this.paciente = paciente;
     }

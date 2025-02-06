@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,20 +22,10 @@ public class PacienteServiceImpl implements PacienteService {
 
     final PacienteRepository pacienteRepository;
     private final TriagemRepository triagemRepository;
-    private final ResultClinicoRepository resultClinicoRepository;
-    private final FeedbackPacienteRepository feedbackPacienteRepository;
-    private final FeedbackProfissionalRepository feedbackProfissionalRepository;
 
-    public PacienteServiceImpl(PacienteRepository pacienteRepository,
-                               TriagemRepository triagemRepository,
-                               ResultClinicoRepository resultClinicoRepository,
-                               FeedbackPacienteRepository feedbackPacienteRepository,
-                               FeedbackProfissionalRepository feedbackProfissionalRepository) {
+    public PacienteServiceImpl(PacienteRepository pacienteRepository, TriagemRepository triagemRepository) {
         this.pacienteRepository = pacienteRepository;
         this.triagemRepository = triagemRepository;
-        this.resultClinicoRepository = resultClinicoRepository;
-        this.feedbackPacienteRepository = feedbackPacienteRepository;
-        this.feedbackProfissionalRepository = feedbackProfissionalRepository;
     }
 
 
@@ -83,32 +72,11 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     public void delete(PacienteModel pacienteModel) {
 
-        List<TriagemModel> triagemModelList = triagemRepository.findAllPacientesIntoTriagens(pacienteModel.getPacienteId());
-        for (TriagemModel triagemModel : triagemModelList) {
-
-            List<ResultClinicosModel> resultClinicosModelList = resultClinicoRepository.findAllTriagensIntoResultClinico(triagemModel.getTriagemId());
-            for (ResultClinicosModel resultClinicoModel : resultClinicosModelList) {
-                List<FeedbackPacienteModel> feedbackPacienteModelList = feedbackPacienteRepository.findAllTriagensIntoFeedBackPaciente(triagemModel.getTriagemId());
-
-                for (FeedbackPacienteModel feedbackPacienteModel : feedbackPacienteModelList) {
-                    feedbackPacienteRepository.delete(feedbackPacienteModel);
-                }
-                resultClinicoRepository.delete(resultClinicoModel);
-            }
-            List<FeedbackPacienteModel> feedbackPacienteModelList = feedbackPacienteRepository.findAllTriagensIntoFeedBackPaciente(triagemModel.getTriagemId());
-            for (FeedbackPacienteModel feedbackPacienteModel : feedbackPacienteModelList) {
-
-                feedbackPacienteRepository.delete(feedbackPacienteModel);
-            }
-            List<FeedbackProfissionalModel> feedbackProfissionalModelList = feedbackProfissionalRepository.findAllTriagensIntoFeedBackProfissional(triagemModel.getTriagemId());
-            for (FeedbackProfissionalModel feedbackProfissionalModel : feedbackProfissionalModelList) {
-
-                feedbackProfissionalRepository.delete(feedbackProfissionalModel);
-            }
-            triagemRepository.delete(triagemModel);
+        Optional<TriagemModel> triagemModelOptional = triagemRepository.findPacienteIntoTriagem(pacienteModel.getPacienteId());
+        if (!triagemModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Existe Triagem para esse Paciente, não será permitido o Delete. ");
         }
         pacienteRepository.delete(pacienteModel);
     }
-
 
 }

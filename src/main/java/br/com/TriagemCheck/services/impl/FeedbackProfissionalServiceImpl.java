@@ -33,6 +33,12 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     public FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, ProfissionalModel profissionalModel,
                                             TriagemModel triagemModel) {
 
+        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
+                feedbackProfissionalRepository.findProfissionalTriagem(profissionalModel.getProfissionalId(),triagemModel.getTriagemId() );
+        if(!feedbackProfissionalModelOptional.isEmpty()){
+            throw new NotFoundException("Error: profissional, triagemId  found for this TB_FEEDBACKPROFISSIONAL.");
+        }
+
         var feedbackprofissionalModel = new FeedbackProfissionalModel();
 
         BeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackprofissionalModel);

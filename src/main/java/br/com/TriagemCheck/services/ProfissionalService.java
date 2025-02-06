@@ -21,5 +21,5 @@ public interface ProfissionalService {
 
     ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel);
 
-
+    void delete(ProfissionalModel profissionalModel);
 }
