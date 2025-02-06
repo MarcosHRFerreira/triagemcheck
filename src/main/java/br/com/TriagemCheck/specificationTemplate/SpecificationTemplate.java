@@ -14,6 +14,7 @@ public class SpecificationTemplate {
     @And({
             @Spec(path = "cpf",  spec = Equal.class),
             @Spec(path = "dataFeedback",  spec = Equal.class),
+            @Spec(path = "nome",  spec = LikeIgnoreCase.class)
     })
 
     public interface PacienteSpec extends Specification<PacienteModel> {}
@@ -26,6 +27,7 @@ public class SpecificationTemplate {
 
     public interface ResultClinicoSpec extends Specification<ResultClinicosModel> {}
 
+    @Spec(path = "title", spec = LikeIgnoreCase.class)
     public interface TriagemSpec extends Specification<TriagemModel> {}
 
     public static Specification<PacienteModel> pacienteUrseId(final UUID pacienteId) {

@@ -1,10 +1,12 @@
 package br.com.TriagemCheck.services;
 
 
+import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
+import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,4 +26,5 @@ public interface TriagemService {
 
     TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel);
 
+    Page<TriagemCompletaRecordDto> findTriagemCompleta(SpecificationTemplate.TriagemSpec spec, Pageable pageable);
 }

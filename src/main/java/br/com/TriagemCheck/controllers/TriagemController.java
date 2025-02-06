@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.controllers;
 
+import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.PacienteService;
@@ -29,11 +30,12 @@ public class TriagemController {
     final PacienteService pacienteService;
     final ProfissionalService profissionalService;
 
-    public TriagemController(TriagemService triagemService, TriagemValidator triagemValidator, PacienteService pacienteService, ProfissionalService profissionalService) {
+    public TriagemController(TriagemService triagemService, TriagemValidator triagemValidator, PacienteService pacienteService, ProfissionalService profissionalService ) {
         this.triagemService = triagemService;
         this.triagemValidator = triagemValidator;
         this.pacienteService = pacienteService;
         this.profissionalService = profissionalService;
+
     }
     @PostMapping("/pacientes/{pacienteId}/profissionais/{profissionalId}/triagens")
     public ResponseEntity<Object> savarTriagem(@PathVariable(value = "pacienteId") UUID pacienteId,
@@ -80,6 +82,14 @@ public class TriagemController {
                 .body(triagemService.update(triagemRecordDto, triagemService.
                         findPacienteProfissionalInTriagem(pacienteId,profissionalId, triagemId).get()));
     }
+    @GetMapping("/completa")
+    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(SpecificationTemplate.TriagemSpec spec,
+                                                                             Pageable pageable){
+        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(spec, pageable );
+        return ResponseEntity.status(HttpStatus.OK).body(triagemCompleta);
+    }
+
+
 
 
 }
