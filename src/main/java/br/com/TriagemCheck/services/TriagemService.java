@@ -6,10 +6,8 @@ import br.com.TriagemCheck.dtos.TriagemRecordDto;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,11 +18,11 @@ public interface TriagemService {
 
     Optional<TriagemModel> findById(UUID triagemId);
 
-    Page<TriagemModel> findAll(Specification<TriagemModel> spec, Pageable pageable);
+    Page<TriagemModel> findAll( Pageable pageable);
 
     Optional<TriagemModel> findPacienteProfissionalInTriagem(UUID pacienteId, UUID profissionalId, UUID triagemId);
 
     TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel);
 
-    Page<TriagemCompletaRecordDto> findTriagemCompleta(SpecificationTemplate.TriagemSpec spec, Pageable pageable);
+    Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable);
 }

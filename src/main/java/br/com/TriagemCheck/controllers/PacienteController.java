@@ -5,6 +5,10 @@ import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.PacienteValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,8 +35,13 @@ public class PacienteController {
         this.pacienteService = pacienteService;
         this.pacienteValidator = pacienteValidator;
     }
+    @Operation(summary = "Salvar um novo paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Paciente salvo com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação do paciente")
+    })
     @PostMapping
-    public ResponseEntity<Object>save(@RequestBody PacienteRecordDto pacienteRecordDto, Errors errors){
+    public ResponseEntity<Object>save(@Parameter(description = "Dados do paciente") @RequestBody PacienteRecordDto pacienteRecordDto, Errors errors){
 
         logger.debug("POST savePaciente pacienteRecordDto recebido {} ", pacienteRecordDto);
 
@@ -43,31 +52,49 @@ public class PacienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteService.save(pacienteRecordDto));
 
     }
+
+    @Operation(summary = "Obter todos os pacientes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pacientes encontrados com sucesso")
+    })
     @GetMapping
-    public ResponseEntity<Page<PacienteModel>> getAll(SpecificationTemplate.PacienteSpec spec,
-                                                                       Pageable pageable,
-                                                                       @RequestParam(required = false) UUID pacienteId){
-        Page<PacienteModel> pacienteModelPage = (pacienteId != null)
-                ? pacienteService.findAll(SpecificationTemplate.pacienteUrseId(pacienteId).and(spec), pageable)
-                : pacienteService.findAll(spec, pageable);
+    public ResponseEntity<Page<PacienteModel>> getAll(Pageable pageable, @RequestParam(required = false) UUID pacienteId){
+        Page<PacienteModel> pacienteModelPage = pacienteService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(pacienteModelPage);
     }
+
+    @Operation(summary = "Atualizar um paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+    })
     @PutMapping("/{pacienteId}")
-    public ResponseEntity<Object> update(@PathVariable(value = "pacienteId") UUID pacienteId,
-                                                  @RequestBody @Valid PacienteRecordDto pacienteRecordDto){
+    public ResponseEntity<Object> update(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId,
+                                         @Parameter(description = "Dados do paciente") @RequestBody @Valid PacienteRecordDto pacienteRecordDto){
         logger.debug("PUT alterarPaciente  pacienteRecordDto received {} ", pacienteRecordDto);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(pacienteService.update(pacienteRecordDto, pacienteService.findById(pacienteId).get()));
 
     }
+    @Operation(summary = "Obter um paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+    })
     @GetMapping("/{pacienteId}")
-    public ResponseEntity<Object> getOne(@PathVariable(value = "pacienteId") UUID pacienteId){
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
         return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findById(pacienteId).get());
     }
 
+    @Operation(summary = "Deletar um paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+
+    })
     @DeleteMapping("/{pacienteId}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "pacienteId") UUID pacienteId){
+    public ResponseEntity<Object> delete(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
         logger.debug("Delete Paciente received {} ", pacienteId);
         pacienteService.delete(pacienteService.findById(pacienteId).get());
         return ResponseEntity.status(HttpStatus.OK).body("Paciente deleted successfully.");

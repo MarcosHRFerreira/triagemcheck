@@ -19,7 +19,7 @@ public interface FeedbackProfissionalService {
     FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, ProfissionalModel profissionalModel,
                                      TriagemModel triagemModel);
 
-    Page<FeedbackProfissionalModel> findAll(Specification<FeedbackProfissionalModel> spec, Pageable pageable);
+    Page<FeedbackProfissionalModel> findAll(Pageable pageable);
 
 
     Optional<FeedbackProfissionalModel> findById(UUID feedbackprofissionalId);

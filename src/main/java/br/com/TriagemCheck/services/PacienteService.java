@@ -14,7 +14,7 @@ public interface PacienteService {
 
       boolean existsBycpf(String cpf);
 
-    Page<PacienteModel> findAll(Specification<PacienteModel> spec, Pageable pageable);
+    Page<PacienteModel> findAll(Pageable pageable);
 
     Optional<PacienteModel> findById(UUID pacienteId);
 

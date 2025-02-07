@@ -8,6 +8,10 @@ import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.ProfissionalValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,10 +37,17 @@ public class ProfissionalController {
         this.profissionalService = profissionalService;
         this.profissionalValidator = profissionalValidator;
     }
+
+    @Operation(summary = "Salva um novo Profissional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Profissional salvo com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação dos dados")
+    })
+
     @PostMapping
     public ResponseEntity<Object>salvaMedico(@RequestBody ProfissionalRecordDto profissionalRecordDto, Errors errors){
 
-        logger.debug("POST salvaMedico medicoRecordDto received {} ", profissionalRecordDto);
+        logger.debug("POST salvaProfissional profissionalRecordDto received {} ", profissionalRecordDto);
 
         profissionalValidator.validate(profissionalRecordDto, errors);
         if(errors.hasErrors()){
@@ -45,23 +56,26 @@ public class ProfissionalController {
         return ResponseEntity.status(HttpStatus.CREATED).body(profissionalService.save(profissionalRecordDto));
     }
 
+    @Operation(summary = "Busca todos os profissionais")
+    @ApiResponse(responseCode = "200", description = "Lista de profissionais retornada com sucesso")
     @GetMapping
-    public ResponseEntity<Page<ProfissionalModel>> getAll(SpecificationTemplate.ProfissionalSpec spec,
-                                                          Pageable pageable,
-                                                          @RequestParam(required = false) UUID profissionalId){
-        Page<ProfissionalModel>  profissionalModelPage = (profissionalId != null)
-                ? profissionalService.findAll(SpecificationTemplate.profissionalId(profissionalId).and(spec), pageable)
-                : profissionalService.findAll(spec, pageable);
+    public ResponseEntity<Page<ProfissionalModel>> getAll(Pageable pageable){
+        Page<ProfissionalModel>  profissionalModelPage = profissionalService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(profissionalModelPage);
     }
+
 
     @GetMapping("/{profissionalId}")
     public ResponseEntity<Object> getOne(@PathVariable(value = "profissionalId") UUID profissionalId){
         return ResponseEntity.status(HttpStatus.OK).body(profissionalService.findById(profissionalId).get());
     }
-
+    @Operation(summary = "Busca um profissional pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profissional encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
+    })
     @PutMapping("/{profissionalId}")
-    public ResponseEntity<Object> update(@PathVariable(value = "profissionalId") UUID profissionalId,
+    public ResponseEntity<Object> update(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
                                          @RequestBody @Valid ProfissionalRecordDto profissionalRecordDto){
         logger.debug("PUT update  profissionalRecordDto received {} ", profissionalRecordDto);
 
@@ -70,8 +84,13 @@ public class ProfissionalController {
 
     }
 
+    @Operation(summary = "Deleta um profissional pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Profissional deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
+    })
     @DeleteMapping("/{profissionalId}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "profissionalId") UUID profissionalId){
+    public ResponseEntity<Object> delete(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId){
         logger.debug("Delete Profissional profissionalId received {} ", profissionalId);
         profissionalService.delete(profissionalService.findById(profissionalId).get());
         return ResponseEntity.status(HttpStatus.OK).body("Profissional deleted successfully.");

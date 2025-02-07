@@ -2,6 +2,7 @@ package br.com.TriagemCheck.validations;
 
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.enums.Especialidade;
+import br.com.TriagemCheck.enums.StatusOperacional;
 import br.com.TriagemCheck.services.ProfissionalService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +37,16 @@ public class ProfissionalValidator implements Validator{
         validator.validate(profissionalRecordDto, errors);
         if(!errors.hasErrors()){
             validateMedicoCrm(profissionalRecordDto, errors);
+            validateVerificaStatusProfissional(profissionalRecordDto,errors);
         }
+    }
+
+    private void validateVerificaStatusProfissional(ProfissionalRecordDto profissionalRecordDto, Errors errors) {
+        if (profissionalRecordDto.statusOperacional().equals(StatusOperacional.INATIVO)){
+            errors.rejectValue("statusOperacional", "statusOperacionalConflict", "O Status Operacional deve estar Ativo.");
+            logger.error("Error validation Status Operacional: O Status Operacional deve estar Ativo.");
+        }
+
     }
 
     private void validateMedicoCrm(ProfissionalRecordDto profissionalRecordDto, Errors errors) {

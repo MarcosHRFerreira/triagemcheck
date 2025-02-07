@@ -47,7 +47,7 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
-    public Page<PacienteModel> findAll(Specification<PacienteModel> spec, Pageable pageable) {
+    public Page<PacienteModel> findAll(Pageable pageable) {
         return pacienteRepository.findAll(pageable);
     }
 

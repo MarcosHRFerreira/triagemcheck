@@ -7,6 +7,10 @@ import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.TriagemService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.FeedbackPacienteValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -36,9 +40,16 @@ public class FeedbackPacienteController {
         this.triagemService = triagemService;
         this.pacienteService = pacienteService;
     }
+
+    @Operation(summary = "Salvar feedback do paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Feedback criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação do feedback")
+    })
     @PostMapping("/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-    public ResponseEntity<Object> save(@PathVariable(value ="pacienteId") UUID pacienteId,
-                                       @PathVariable(value="triagemId") UUID triagemId,
+
+    public ResponseEntity<Object> save(@Parameter(description = "ID do paciente")@PathVariable(value ="pacienteId") UUID pacienteId,
+                                       @Parameter(description = "ID da triagem")@PathVariable(value="triagemId") UUID triagemId,
             @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
@@ -52,27 +63,32 @@ public class FeedbackPacienteController {
                 triagemService.findById(triagemId).get()));
     }
 
+    @Operation(summary = "Obter todos os feedbacks dos pacientes")
+    @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
     @GetMapping
-    public ResponseEntity<Page<FeedbackPacienteModel>> getAll(SpecificationTemplate.FeedbackpacienteSpec spec,
-                                                              Pageable pageable,
-                                                              @RequestParam(required = false) UUID feedbackpacienteId){
-        Page<FeedbackPacienteModel>  feedbackpacienteModelPage = (feedbackpacienteId != null)
-                ? feedbackPacienteService.findAll(SpecificationTemplate.feedbackpacienteId(feedbackpacienteId).and(spec), pageable)
-                : feedbackPacienteService.findAll(spec, pageable);
+    public ResponseEntity<Page<FeedbackPacienteModel>> getAll(Pageable pageable,
+                                            @Parameter(description = "ID do feedback do paciente") @RequestParam(required = false) UUID feedbackpacienteId){
+        Page<FeedbackPacienteModel>  feedbackpacienteModelPage = feedbackPacienteService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackpacienteModelPage);
     }
 
+    @Operation(summary = "Obter um feedback do paciente pelo ID")
+    @ApiResponse(responseCode = "200", description = "Feedback obtido com sucesso")
     @GetMapping("/{feedbackpacienteId}")
-    public ResponseEntity<Object> getOne(@PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
         return ResponseEntity.status(HttpStatus.OK).body(feedbackPacienteService.findById(feedbackpacienteId).get());
     }
 
-
+    @Operation(summary = "Atualizar feedback do paciente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
+    })
     @PutMapping("/{feedbackpacienteId}/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-    public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
-                                               @PathVariable(value="triagemId") UUID triagemId,
-                                               @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
-                                               @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto){
+    public ResponseEntity<Object> update(@Parameter(description = "ID do paciente") @PathVariable(value ="pacienteId") UUID pacienteId,
+                                         @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
+                                         @Parameter(description = "ID do feedback do paciente") @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
+                                         @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto){
 
         logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
 
@@ -81,13 +97,15 @@ public class FeedbackPacienteController {
                         findPacienteTriagemInFeedback(pacienteId, triagemId,feedbackpacienteId).get()));
     }
 
+    @Operation(summary = "Deletar feedback do paciente")
+    @ApiResponse(responseCode = "200", description = "Feedback deletado com sucesso")
+    @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
     @DeleteMapping("/{feedbackpacienteId}")
-    public ResponseEntity<Object> delete(@PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
+    public ResponseEntity<Object> delete(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
         logger.debug("DELETE delete FeedbackPacientes feedbackpacienteId received {} ", feedbackpacienteId);
         feedbackPacienteService.delete(feedbackPacienteService.findById(feedbackpacienteId).get());
         return ResponseEntity.status(HttpStatus.OK).body("FeedBack Paciente deleted successfully.");
     }
-
 
 
 

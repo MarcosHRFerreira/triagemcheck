@@ -1,14 +1,15 @@
 package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
-import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.ResultClinicoService;
 import br.com.TriagemCheck.services.TriagemService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.ResultClinicoValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -39,9 +40,14 @@ public class ResultClinicoContoller {
         this.profissionalService = profissionalService;
         this.triagemService = triagemService;
     }
+    @Operation(summary = "Salvar ResultClinico", description = "Salva um novo resultado clínico.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação")
+    })
     @PostMapping("/triagens/{triagemId}/profissionais/{profissionalId}/resultclinico")
-    public ResponseEntity<Object> salvarResultClinico(@PathVariable(value = "triagemId") UUID triagemId,
-                                                      @PathVariable(value = "profissionalId") UUID profissionalId,
+    public ResponseEntity<Object> salvarResultClinico(@Parameter(description = "ID da triagem") @PathVariable(value = "triagemId") UUID triagemId,
+                                                      @Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
             @RequestBody ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
 
         logger.debug("POST saveResultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
@@ -55,26 +61,33 @@ public class ResultClinicoContoller {
                 profissionalService.findById(profissionalId).get()));
     }
 
+    @Operation(summary = "Obter todos os ResultClinicos", description = "Obtém uma lista paginada de todos os resultados clínicos.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listagem bem-sucedida")
+    })
     @GetMapping
-    public ResponseEntity<Page<ResultClinicosModel>> getAll(SpecificationTemplate.ResultClinicoSpec spec,
-                                                            Pageable pageable,
-                                                            @RequestParam(required = false) UUID resultadoId){
-        Page<ResultClinicosModel>  resultClinicosModelPage = (resultadoId != null)
-                ? resultClinicoService.findAll(SpecificationTemplate.resultadoId(resultadoId).and(spec), pageable)
-                : resultClinicoService.findAll(spec, pageable);
+    public ResponseEntity<Page<ResultClinicosModel>> getAll(Pageable pageable){
+        Page<ResultClinicosModel>  resultClinicosModelPage = resultClinicoService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(resultClinicosModelPage);
     }
 
-
+    @Operation(summary = "Obter um ResultClinico", description = "Obtém um resultado clínico específico pelo ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Consulta bem-sucedida"),
+            @ApiResponse(responseCode = "404", description = "Resultado não encontrado")
+    })
     @GetMapping("/{resultadoId}")
-    public ResponseEntity<Object> getOne(@PathVariable(value = "resultadoId") UUID resultadoId){
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID do resultado") @PathVariable(value = "resultadoId") UUID resultadoId){
         return ResponseEntity.status(HttpStatus.OK).body(resultClinicoService.findById(resultadoId).get());
     }
-
+    @Operation(summary = "Atualizar ResultClinico", description = "Atualiza um resultado clínico existente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Atualização bem-sucedida")
+    })
     @PutMapping("/{resultadoId}/profissionais/{profissionalId}/triagens/{triagemId}/resultado")
-    public ResponseEntity<Object> update(@PathVariable(value ="profissionalId") UUID profissionalId,
-                                         @PathVariable(value="triagemId") UUID triagemId,
-                                         @PathVariable(value="resultadoId") UUID resultadoId,
+    public ResponseEntity<Object> update(@Parameter(description = "ID do profissional")   @PathVariable(value ="profissionalId") UUID profissionalId,
+                                         @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
+                                         @Parameter(description = "ID do resultado") @PathVariable(value="resultadoId") UUID resultadoId,
                                          @RequestBody ResultClinicoRecordDto resultClinicoRecordDto){
 
         logger.debug("PUT resultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
@@ -83,6 +96,4 @@ public class ResultClinicoContoller {
                 .body(resultClinicoService.update(resultClinicoRecordDto, resultClinicoService.
                         findProfissionalTriagemInResultClinico(profissionalId,triagemId, resultadoId).get()));
     }
-
-
 }

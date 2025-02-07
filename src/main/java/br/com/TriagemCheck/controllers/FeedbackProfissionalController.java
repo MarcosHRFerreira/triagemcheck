@@ -1,14 +1,16 @@
 package br.com.TriagemCheck.controllers;
 
-import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
-import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.services.FeedbackProfissionalService;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.FeedbackProfissionalValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -37,9 +39,14 @@ public class FeedbackProfissionalController {
         this.profissionalService = profissionalService;
         this.triagemService = triagemService;
     }
+    @Operation(summary = "Salvar feedback do profissional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Feedback criado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro na validação do feedback")
+    })
     @PostMapping("/{profissionais}/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
-    public ResponseEntity<Object>saveFeedbackProfissional(@PathVariable(value = "profissionalId") UUID profissionalId,
-                                                          @PathVariable(value="triagemId") UUID triagemId,
+    public ResponseEntity<Object>saveFeedbackProfissional(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
+                                                          @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
             @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
 
         logger.debug("POST saveFeedbackProfissional feedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
@@ -53,28 +60,30 @@ public class FeedbackProfissionalController {
                 profissionalService.findById(profissionalId).get(),
                 triagemService.findById(triagemId).get()));
     }
-
+    @Operation(summary = "Obter todos os feedbacks dos profissionais")
+    @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
     @GetMapping
-    public ResponseEntity<Page<FeedbackProfissionalModel>> getAll(SpecificationTemplate.FeedbackprofissionalSpec spec,
-                                                                  Pageable pageable,
+    public ResponseEntity<Page<FeedbackProfissionalModel>> getAll( Pageable pageable,
                                                                   @RequestParam(required = false) UUID feedbackprofissionalId){
-        Page<FeedbackProfissionalModel>  feedbackProfissionalModelPage = (feedbackprofissionalId != null)
-                ? feedbackProfissionalService.findAll(SpecificationTemplate.feedbackprofissionalId(feedbackprofissionalId).and(spec), pageable)
-                : feedbackProfissionalService.findAll(spec, pageable);
+        Page<FeedbackProfissionalModel>  feedbackProfissionalModelPage = feedbackProfissionalService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalModelPage);
     }
-
+    @Operation(summary = "Obter um feedback do profissional pelo ID")
+    @ApiResponse(responseCode = "200", description = "Feedback obtido com sucesso")
     @GetMapping("/{feedbackprofissionalId}")
-    public ResponseEntity<Object> getOne(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do profissional") @PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
         return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalService.findById(feedbackprofissionalId).get());
     }
 
-
-
+    @Operation(summary = "Atualizar feedback do profissional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
+    })
     @PutMapping("/{feedbackprofissionalId}/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
-    public ResponseEntity<Object> updateFeedBackProfissional(@PathVariable(value ="profissionalId") UUID profissionalId,
-                                                         @PathVariable(value="triagemId") UUID triagemId,
-                                                         @PathVariable(value="feedbackprofissionalId") UUID feedbackprofissionalId,
+    public ResponseEntity<Object> updateFeedBackProfissional(@Parameter(description = "ID do feedback do profissional") @PathVariable(value ="profissionalId") UUID profissionalId,
+                                                             @Parameter(description = "ID da triagem")  @PathVariable(value="triagemId") UUID triagemId,
+                                                             @Parameter(description = "ID do feedback do profissional") @PathVariable(value="feedbackprofissionalId") UUID feedbackprofissionalId,
                                                          @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto){
 
         logger.debug("PUT updateFeedBackProfissional FeedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
@@ -83,7 +92,11 @@ public class FeedbackProfissionalController {
                 .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, feedbackProfissionalService.
                         findProfissionalTriagemInFeedback(profissionalId, triagemId,feedbackprofissionalId).get()));
     }
-
+    @Operation(summary = "Deletar feedback do profissional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
+    })
     @DeleteMapping("/{feedbackprofissionalId}")
     public ResponseEntity<Object> delete(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
         logger.debug("DELETE delete FeedbackProfissionais feedbackprofissionalId received {} ", feedbackprofissionalId);

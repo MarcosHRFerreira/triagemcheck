@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface ResultClinicoService {
     ResultClinicosModel save(ResultClinicoRecordDto resultClinicoRecordDto, TriagemModel triagemModel, ProfissionalModel profissionalModel);
 
-    Page<ResultClinicosModel> findAll(Specification<ResultClinicosModel> specification, Pageable pageable);
+    Page<ResultClinicosModel> findAll(Pageable pageable);
 
     Optional<ResultClinicosModel> findById(UUID resultadoId);
 

@@ -8,6 +8,12 @@ import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
 import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.TriagemValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -37,10 +43,18 @@ public class TriagemController {
         this.profissionalService = profissionalService;
 
     }
+
+
+    @Operation(summary = "Salvar Triagem", description = "Salva uma nova triagem para um paciente específico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Triagem criada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação", content = @Content)
+    })
+
     @PostMapping("/pacientes/{pacienteId}/profissionais/{profissionalId}/triagens")
-    public ResponseEntity<Object> savarTriagem(@PathVariable(value = "pacienteId") UUID pacienteId,
-                                               @PathVariable(value="profissionalId") UUID profissionalId,
-            @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
+    public ResponseEntity<Object> savarTriagem(@Parameter(description = "ID do paciente", required = true) @PathVariable(value = "pacienteId") UUID pacienteId,
+                                               @Parameter(description = "ID do profissional", required = true) @PathVariable(value="profissionalId") UUID profissionalId,
+                                               @Parameter(description = "Dados da triagem", required = true) @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
 
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
 
@@ -55,26 +69,37 @@ public class TriagemController {
 
     }
 
-    @GetMapping
-    public ResponseEntity<Page<TriagemModel>> getAll(SpecificationTemplate.TriagemSpec spec,
-                                                     Pageable pageable,
-                                                     @RequestParam(required = false) UUID triagemId){
-        Page<TriagemModel>  triagemModelPage = (triagemId != null)
-                ? triagemService.findAll(SpecificationTemplate.triagemId(triagemId).and(spec), pageable)
-                : triagemService.findAll(spec, pageable);
+    @Operation(summary = "Listar Todas as Triagens", description = "Retorna uma lista paginada de todas as triagens")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de triagens retornada com sucesso")
+    })
+    @GetMapping("/todastriagens")
+    public ResponseEntity<Page<TriagemModel>> getAll( Pageable pageable)                                                     {
+        Page<TriagemModel>  triagemModelPage =  triagemService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(triagemModelPage);
     }
 
+    @Operation(summary = "Buscar Triagem por ID", description = "Retorna os detalhes de uma triagem específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Detalhes da triagem retornados com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Triagem não encontrada")
+    })
     @GetMapping("/{triagemId}")
-    public ResponseEntity<Object> getOne(@PathVariable(value = "triagemId") UUID triagemId){
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID da triagem", required = true) @PathVariable(value = "triagemId") UUID triagemId){
         return ResponseEntity.status(HttpStatus.OK).body(triagemService.findById(triagemId).get());
     }
 
+    @Operation(summary = "Atualizar Triagem", description = "Atualiza os dados de uma triagem específica")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Triagem atualizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Triagem não encontrada"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação", content = @Content)
+    })
     @PutMapping("/{triagemId}/pacientes/{pacienteId}/profissionais/{profissionalId}/triagem")
-    public ResponseEntity<Object> update(@PathVariable(value ="pacienteId") UUID pacienteId,
-                                         @PathVariable(value="profissionalId") UUID profissionalId,
-                                         @PathVariable(value="triagemId") UUID triagemId,
-                                         @RequestBody TriagemRecordDto triagemRecordDto){
+    public ResponseEntity<Object> update(@Parameter(description = "ID do paciente", required = true) @PathVariable(value ="pacienteId") UUID pacienteId,
+                                         @Parameter(description = "ID do profissional", required = true) @PathVariable(value="profissionalId") UUID profissionalId,
+                                         @Parameter(description = "ID da triagem", required = true)  @PathVariable(value="triagemId") UUID triagemId,
+                                         @Parameter(description = "Dados atualizados da triagem", required = true) @RequestBody TriagemRecordDto triagemRecordDto){
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 
@@ -82,10 +107,15 @@ public class TriagemController {
                 .body(triagemService.update(triagemRecordDto, triagemService.
                         findPacienteProfissionalInTriagem(pacienteId,profissionalId, triagemId).get()));
     }
+
+    @Operation(summary = "Listar Triagens Completas", description = "Retorna uma lista paginada de triagens com informações detalhdas")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de triagens completas retornada com sucesso")
+    })
+
     @GetMapping("/completa")
-    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(SpecificationTemplate.TriagemSpec spec,
-                                                                             Pageable pageable){
-        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(spec, pageable );
+    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@Parameter(description = "A Opção do Sort não pode ficar Vazio, ou Ritire o Sort para não acusar Erro", required = false) Pageable pageable){
+        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(pageable );
         return ResponseEntity.status(HttpStatus.OK).body(triagemCompleta);
     }
 

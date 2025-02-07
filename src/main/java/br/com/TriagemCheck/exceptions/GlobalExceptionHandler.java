@@ -13,6 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.NoPermissionException;
+import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +30,18 @@ public class GlobalExceptionHandler {
         logger.error("NotFoundException message: {} ", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorRecordResponse);
     }
+
+    @ExceptionHandler(NoValidException.class)
+    public ResponseEntity<ErrorRecordResponse> handleNoValidException(NoValidException ex) {
+        var errorRecordResponse = new ErrorRecordResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                null
+        );
+        logger.error("NoValidException message: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorRecordResponse);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorRecordResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -75,9 +89,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
     }
 
-
-
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorRecordResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        var errorRecordResponse = new ErrorRecordResponse(
+                HttpStatus.FORBIDDEN.value(),
+                "Erro de acesso negado: " + ex.getMessage(),
+                null
+        );
+        logger.error("AccessDeniedException message: {} ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorRecordResponse);
+    }
 
 
 

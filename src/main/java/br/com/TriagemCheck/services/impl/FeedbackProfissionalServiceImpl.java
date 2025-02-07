@@ -54,7 +54,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     }
 
     @Override
-    public Page<FeedbackProfissionalModel> findAll(Specification<FeedbackProfissionalModel> spec, Pageable pageable) {
+    public Page<FeedbackProfissionalModel> findAll(Pageable pageable) {
         return feedbackProfissionalRepository.findAll(pageable);
     }
 

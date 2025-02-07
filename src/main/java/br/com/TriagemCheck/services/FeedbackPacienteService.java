@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface FeedbackPacienteService {
     FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, PacienteModel pacienteModel, TriagemModel triagemModel);
 
-    Page<FeedbackPacienteModel> findAll(Specification<FeedbackPacienteModel> spec, Pageable pageable);
+    Page<FeedbackPacienteModel> findAll( Pageable pageable);
 
     Optional<FeedbackPacienteModel> findById(UUID feedbackpacienteId);
 

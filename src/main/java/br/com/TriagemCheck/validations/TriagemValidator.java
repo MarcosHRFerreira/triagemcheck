@@ -28,10 +28,9 @@ public class TriagemValidator implements Validator {
     public void validate(Object o, Errors errors) {
         TriagemRecordDto triagemRecordDto = (TriagemRecordDto) o;
         validator.validate(triagemRecordDto, errors);
-//        if(!errors.hasErrors()){
-//            validatePacientecpf(pacienteRecordDto, errors);
-//
-//        }
+
     }
+
+
 
 }

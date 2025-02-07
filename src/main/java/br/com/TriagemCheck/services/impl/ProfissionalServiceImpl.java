@@ -56,7 +56,7 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     }
 
     @Override
-    public Page<ProfissionalModel> findAll(Specification<ProfissionalModel> spec, Pageable pageable) {
+    public Page<ProfissionalModel> findAll(Pageable pageable) {
         return profissionalRepository.findAll(pageable);
     }
 

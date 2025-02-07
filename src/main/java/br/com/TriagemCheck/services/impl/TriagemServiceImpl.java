@@ -3,6 +3,8 @@ package br.com.TriagemCheck.services.impl;
 import br.com.TriagemCheck.converter.TriagemConverter;
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
+import br.com.TriagemCheck.enums.Especialidade;
+import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
@@ -10,11 +12,9 @@ import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.TriagemCompletaProjection;
 import br.com.TriagemCheck.services.TriagemService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,6 +42,11 @@ public class TriagemServiceImpl implements TriagemService {
 
         triagemModel.setPaciente(pacienteModel);
         triagemModel.setProfissional(profissionalModel);
+
+        if(!profissionalModel.getEspecialidade().equals(Especialidade.ENFERMAGEM)){
+            throw new NoValidException("Erro: Apenas profissionais de enfermagem têm permissão para abrir a triagem devido a requisitos de protocolo.");
+        }
+
         return triagemRepository.save(triagemModel);
     }
     @Override
@@ -53,7 +58,7 @@ public class TriagemServiceImpl implements TriagemService {
         return triagemModelOptional;
     }
     @Override
-    public Page<TriagemModel> findAll(Specification<TriagemModel> spec, Pageable pageable) {
+    public Page<TriagemModel> findAll( Pageable pageable) {
         return triagemRepository.findAll(pageable);
     }
     @Override
@@ -72,7 +77,7 @@ public class TriagemServiceImpl implements TriagemService {
        return  triagemRepository.save(triagemModel);
     }
     @Override
-    public Page<TriagemCompletaRecordDto> findTriagemCompleta(SpecificationTemplate.TriagemSpec spec, Pageable pageable) {
+    public Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable) {
         Page<TriagemCompletaProjection> triagemProjections = triagemRepository.findTriagemCompleta(pageable);
         return triagemProjections.map(triagemConverter::convertToDto );
     }

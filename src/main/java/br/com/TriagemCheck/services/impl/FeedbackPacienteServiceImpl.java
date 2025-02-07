@@ -51,7 +51,7 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     }
 
     @Override
-    public Page<FeedbackPacienteModel> findAll(Specification<FeedbackPacienteModel> spec, Pageable pageable) {
+    public Page<FeedbackPacienteModel> findAll(Pageable pageable) {
         return feedbackPacienteRepository.findAll(pageable);
     }
 

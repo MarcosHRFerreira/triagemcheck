@@ -41,7 +41,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     }
 
     @Override
-    public Page<ResultClinicosModel> findAll(Specification<ResultClinicosModel> specification, Pageable pageable) {
+    public Page<ResultClinicosModel> findAll(Pageable pageable) {
         return resultClinicoRepository.findAll(pageable);
     }
 
