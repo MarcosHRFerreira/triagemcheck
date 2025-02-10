@@ -1,9 +1,7 @@
 package br.com.TriagemCheck.services.impl;
 
-import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
-import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
@@ -12,7 +10,6 @@ import br.com.TriagemCheck.services.FeedbackProfissionalService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

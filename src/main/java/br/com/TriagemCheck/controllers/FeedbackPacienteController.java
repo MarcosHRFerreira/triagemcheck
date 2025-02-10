@@ -2,10 +2,11 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
+import br.com.TriagemCheck.models.PacienteModel;
+import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.FeedbackPacienteService;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.TriagemService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.FeedbackPacienteValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,10 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -54,15 +57,21 @@ public class FeedbackPacienteController {
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
 
-        feedbackPacienteValidator.validate(feedbackPacienteRecordDto,errors);
-        if(errors.hasErrors()){
+        feedbackPacienteValidator.validate(feedbackPacienteRecordDto, errors);
+        if (errors.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto,
-                pacienteService.findById(pacienteId).get(),
-                triagemService.findById(triagemId).get()));
-    }
+        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
+        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
 
+        if (pacienteOptional.isPresent() && triagemOptional.isPresent()) {
+            PacienteModel paciente = pacienteOptional.get();
+            TriagemModel triagem = triagemOptional.get();
+            return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto, paciente, triagem));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente ou triagem não encontrados.");
+        }
+    }
     @Operation(summary = "Obter todos os feedbacks dos pacientes")
     @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
     @GetMapping
@@ -76,7 +85,13 @@ public class FeedbackPacienteController {
     @ApiResponse(responseCode = "200", description = "Feedback obtido com sucesso")
     @GetMapping("/{feedbackpacienteId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
-        return ResponseEntity.status(HttpStatus.OK).body(feedbackPacienteService.findById(feedbackpacienteId).get());
+
+        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findById(feedbackpacienteId);
+        if (feedbackOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(feedbackOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Atualizar feedback do paciente")
@@ -92,21 +107,31 @@ public class FeedbackPacienteController {
 
         logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(feedbackPacienteService.update(feedbackPacienteRecordDto, feedbackPacienteService.
-                        findPacienteTriagemInFeedback(pacienteId, triagemId,feedbackpacienteId).get()));
+        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findPacienteTriagemInFeedback(pacienteId, triagemId, feedbackpacienteId);
+        if (feedbackOptional.isPresent()) {
+            FeedbackPacienteModel feedbackPaciente = feedbackOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(feedbackPacienteService.update(feedbackPacienteRecordDto, feedbackPaciente));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
+        }
     }
-
     @Operation(summary = "Deletar feedback do paciente")
     @ApiResponse(responseCode = "200", description = "Feedback deletado com sucesso")
     @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
+    @Transactional
     @DeleteMapping("/{feedbackpacienteId}")
     public ResponseEntity<Object> delete(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
         logger.debug("DELETE delete FeedbackPacientes feedbackpacienteId received {} ", feedbackpacienteId);
-        feedbackPacienteService.delete(feedbackPacienteService.findById(feedbackpacienteId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("FeedBack Paciente deleted successfully.");
+
+        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findById(feedbackpacienteId);
+        if (feedbackOptional.isPresent()) {
+            feedbackPacienteService.delete(feedbackOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Feedback Paciente deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
+        }
+
     }
-
-
 
 }

@@ -2,10 +2,11 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
+import br.com.TriagemCheck.models.ProfissionalModel;
+import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.FeedbackProfissionalService;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.FeedbackProfissionalValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,9 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -44,7 +47,7 @@ public class FeedbackProfissionalController {
             @ApiResponse(responseCode = "201", description = "Feedback criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro na validação do feedback")
     })
-    @PostMapping("/{profissionais}/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
+    @PostMapping("/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
     public ResponseEntity<Object>saveFeedbackProfissional(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
                                                           @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
             @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
@@ -53,12 +56,18 @@ public class FeedbackProfissionalController {
 
         feedbackProfissionalValidator.validate(feedbackProfissionalRecordDto,errors);
 
-        if(errors.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+
+        if (profissionalOptional.isPresent() && triagemOptional.isPresent()) {
+            ProfissionalModel profissional = profissionalOptional.get();
+            TriagemModel triagem = triagemOptional.get();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(feedbackProfissionalService.save(feedbackProfissionalRecordDto, profissional, triagem));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional ou triagem não encontrados.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackProfissionalService.save(feedbackProfissionalRecordDto,
-                profissionalService.findById(profissionalId).get(),
-                triagemService.findById(triagemId).get()));
+
     }
     @Operation(summary = "Obter todos os feedbacks dos profissionais")
     @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
@@ -72,9 +81,13 @@ public class FeedbackProfissionalController {
     @ApiResponse(responseCode = "200", description = "Feedback obtido com sucesso")
     @GetMapping("/{feedbackprofissionalId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do profissional") @PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
-        return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalService.findById(feedbackprofissionalId).get());
+        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findById(feedbackprofissionalId);
+        if (feedbackOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(feedbackOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
+        }
     }
-
     @Operation(summary = "Atualizar feedback do profissional")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
@@ -88,21 +101,32 @@ public class FeedbackProfissionalController {
 
         logger.debug("PUT updateFeedBackProfissional FeedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, feedbackProfissionalService.
-                        findProfissionalTriagemInFeedback(profissionalId, triagemId,feedbackprofissionalId).get()));
+        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findProfissionalTriagemInFeedback(profissionalId, triagemId, feedbackprofissionalId);
+        if (feedbackOptional.isPresent()) {
+            FeedbackProfissionalModel feedbackProfissional = feedbackOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, feedbackProfissional));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
     @Operation(summary = "Deletar feedback do profissional")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
     })
+    @Transactional
     @DeleteMapping("/{feedbackprofissionalId}")
     public ResponseEntity<Object> delete(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
         logger.debug("DELETE delete FeedbackProfissionais feedbackprofissionalId received {} ", feedbackprofissionalId);
-        feedbackProfissionalService.delete(feedbackProfissionalService.findById(feedbackprofissionalId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("FeedBack Paciente deleted successfully.");
+        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findById(feedbackprofissionalId);
+        if (feedbackOptional.isPresent()) {
+            feedbackProfissionalService.delete(feedbackOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Feedback do Profissional deletado com sucesso.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
+        }
     }
-
 
 }

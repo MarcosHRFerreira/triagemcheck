@@ -1,12 +1,8 @@
 package br.com.TriagemCheck.controllers;
 
-
-import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
-import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.services.ProfissionalService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.ProfissionalValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,9 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -63,11 +61,16 @@ public class ProfissionalController {
         Page<ProfissionalModel>  profissionalModelPage = profissionalService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(profissionalModelPage);
     }
-
-
     @GetMapping("/{profissionalId}")
     public ResponseEntity<Object> getOne(@PathVariable(value = "profissionalId") UUID profissionalId){
-        return ResponseEntity.status(HttpStatus.OK).body(profissionalService.findById(profissionalId).get());
+        logger.debug("Get getOne  profissionalId received {} ",profissionalId);
+
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        if (profissionalOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(profissionalOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional não encontrado.");
+        }
     }
     @Operation(summary = "Busca um profissional pelo ID")
     @ApiResponses(value = {
@@ -79,9 +82,14 @@ public class ProfissionalController {
                                          @RequestBody @Valid ProfissionalRecordDto profissionalRecordDto){
         logger.debug("PUT update  profissionalRecordDto received {} ", profissionalRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(profissionalService.update(profissionalRecordDto, profissionalService.findById(profissionalId).get()));
-
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        if (profissionalOptional.isPresent()) {
+            ProfissionalModel profissional = profissionalOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(profissionalService.update(profissionalRecordDto, profissional));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional não encontrado.");
+        }
     }
 
     @Operation(summary = "Deleta um profissional pelo ID")
@@ -89,12 +97,18 @@ public class ProfissionalController {
             @ApiResponse(responseCode = "200", description = "Profissional deletado com sucesso"),
             @ApiResponse(responseCode = "404", description = "Profissional não encontrado")
     })
+    @Transactional
     @DeleteMapping("/{profissionalId}")
     public ResponseEntity<Object> delete(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId){
         logger.debug("Delete Profissional profissionalId received {} ", profissionalId);
-        profissionalService.delete(profissionalService.findById(profissionalId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("Profissional deleted successfully.");
-    }
 
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        if (profissionalOptional.isPresent()) {
+            profissionalService.delete(profissionalOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Profissional deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

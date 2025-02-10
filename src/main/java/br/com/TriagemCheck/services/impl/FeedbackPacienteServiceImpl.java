@@ -10,7 +10,6 @@ import br.com.TriagemCheck.services.FeedbackPacienteService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,6 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
         if(!feedbackPacienteModelOptional.isEmpty()){
             throw new NotFoundException("Error: pacienteId, triagemId  found for this TB_FEEDBACKPACIENTES.");
         }
-
         var feedbackPacienteModel = new FeedbackPacienteModel();
 
         BeanUtils.copyProperties(feedbackPacienteRecordDto,feedbackPacienteModel);
@@ -44,7 +42,6 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
 
         feedbackPacienteModel.setPaciente(pacienteModel);
         feedbackPacienteModel.setTriagem(triagemModel);
-
 
         return feedbackPacienteRepository.save(feedbackPacienteModel);
 

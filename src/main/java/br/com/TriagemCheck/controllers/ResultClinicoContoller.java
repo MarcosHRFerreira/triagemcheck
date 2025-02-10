@@ -1,7 +1,9 @@
 package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
+import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.ResultClinicosModel;
+import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.ResultClinicoService;
 import br.com.TriagemCheck.services.TriagemService;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -53,12 +56,18 @@ public class ResultClinicoContoller {
         logger.debug("POST saveResultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 
         resultClinicoValidator.validate(resultClinicoRecordDto, errors);
-        if(errors.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+
+        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+
+        if (triagemOptional.isPresent() && profissionalOptional.isPresent()) {
+            TriagemModel triagem = triagemOptional.get();
+            ProfissionalModel profissional = profissionalOptional.get();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(resultClinicoService.save(resultClinicoRecordDto, triagem, profissional));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Triagem ou profissional não encontrados.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(resultClinicoService.save(resultClinicoRecordDto,
-                triagemService.findById(triagemId).get(),
-                profissionalService.findById(profissionalId).get()));
     }
 
     @Operation(summary = "Obter todos os ResultClinicos", description = "Obtém uma lista paginada de todos os resultados clínicos.")
@@ -78,22 +87,34 @@ public class ResultClinicoContoller {
     })
     @GetMapping("/{resultadoId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do resultado") @PathVariable(value = "resultadoId") UUID resultadoId){
-        return ResponseEntity.status(HttpStatus.OK).body(resultClinicoService.findById(resultadoId).get());
+
+        Optional<ResultClinicosModel> resultOptional = resultClinicoService.findById(resultadoId);
+        if (resultOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(resultOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resultado não encontrado.");
+        }
     }
+
     @Operation(summary = "Atualizar ResultClinico", description = "Atualiza um resultado clínico existente.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Atualização bem-sucedida")
-    })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Atualização bem-sucedida")})
     @PutMapping("/{resultadoId}/profissionais/{profissionalId}/triagens/{triagemId}/resultado")
     public ResponseEntity<Object> update(@Parameter(description = "ID do profissional")   @PathVariable(value ="profissionalId") UUID profissionalId,
                                          @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
                                          @Parameter(description = "ID do resultado") @PathVariable(value="resultadoId") UUID resultadoId,
-                                         @RequestBody ResultClinicoRecordDto resultClinicoRecordDto){
+                                         @RequestBody ResultClinicoRecordDto resultClinicoRecordDto) {
 
         logger.debug("PUT resultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(resultClinicoService.update(resultClinicoRecordDto, resultClinicoService.
-                        findProfissionalTriagemInResultClinico(profissionalId,triagemId, resultadoId).get()));
+        Optional<ResultClinicosModel> resultOptional = resultClinicoService.findProfissionalTriagemInResultClinico(profissionalId, triagemId, resultadoId);
+
+        if (resultOptional.isPresent()) {
+            ResultClinicosModel resultClinico = resultOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(resultClinicoService.update(resultClinicoRecordDto, resultClinico));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Resultado não encontrado.");
+
+        }
     }
 }

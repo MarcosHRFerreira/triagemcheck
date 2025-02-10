@@ -8,7 +8,6 @@ import br.com.TriagemCheck.services.PacienteService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,17 +49,14 @@ public class PacienteServiceImpl implements PacienteService {
     public Page<PacienteModel> findAll(Pageable pageable) {
         return pacienteRepository.findAll(pageable);
     }
-
     @Override
-    public Optional<PacienteModel> findById(UUID pacienteId){
-        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
+    public Optional<PacienteModel> findByCpf(String cpf){
+        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findByCpf(cpf);
         if(pacienteModelOptional.isEmpty()){
             throw new NotFoundException("Erro: Paciente not found.");
         }
         return pacienteModelOptional;
     }
-
-
     @Override
     public PacienteModel update(PacienteRecordDto pacienteRecordDto, PacienteModel pacienteModel) {
         BeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
@@ -71,12 +67,19 @@ public class PacienteServiceImpl implements PacienteService {
     @Transactional
     @Override
     public void delete(PacienteModel pacienteModel) {
-
         Optional<TriagemModel> triagemModelOptional = triagemRepository.findPacienteIntoTriagem(pacienteModel.getPacienteId());
         if (!triagemModelOptional.isEmpty()) {
             throw new NotFoundException("Erro: Existe Triagem para esse Paciente, não será permitido o Delete. ");
         }
         pacienteRepository.delete(pacienteModel);
+    }
+    @Override
+    public Optional<PacienteModel> findById(UUID pacienteId) {
+        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
+        if(pacienteModelOptional.isEmpty()){
+            throw new NotFoundException("Erro: Paciente not found.");
+        }
+        return pacienteModelOptional;
     }
 
 }

@@ -2,16 +2,16 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
+import br.com.TriagemCheck.models.PacienteModel;
+import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.TriagemValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -43,8 +44,6 @@ public class TriagemController {
         this.profissionalService = profissionalService;
 
     }
-
-
     @Operation(summary = "Salvar Triagem", description = "Salva uma nova triagem para um paciente específico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Triagem criada com sucesso"),
@@ -59,14 +58,18 @@ public class TriagemController {
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
 
         triagemValidator.validate(triagemRecordDto, errors);
-        if(errors.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+
+        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
+        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+
+        if (pacienteOptional.isPresent() && profissionalOptional.isPresent()) {
+            PacienteModel paciente = pacienteOptional.get();
+            ProfissionalModel profissional = profissionalOptional.get();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(triagemService.save(triagemRecordDto, paciente, profissional));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente ou profissional não encontrados.");
         }
-
-          return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.save(triagemRecordDto,
-                  pacienteService.findById(pacienteId).get(),
-                  profissionalService.findById(profissionalId).get()));
-
     }
 
     @Operation(summary = "Listar Todas as Triagens", description = "Retorna uma lista paginada de todas as triagens")
@@ -86,7 +89,16 @@ public class TriagemController {
     })
     @GetMapping("/{triagemId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID da triagem", required = true) @PathVariable(value = "triagemId") UUID triagemId){
-        return ResponseEntity.status(HttpStatus.OK).body(triagemService.findById(triagemId).get());
+
+        logger.debug("Get triagens getOne received {} ", triagemId);
+
+        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        if (triagemOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(triagemOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Triagem não encontrada.");
+        }
+
     }
 
     @Operation(summary = "Atualizar Triagem", description = "Atualiza os dados de uma triagem específica")
@@ -103,9 +115,14 @@ public class TriagemController {
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(triagemService.update(triagemRecordDto, triagemService.
-                        findPacienteProfissionalInTriagem(pacienteId,profissionalId, triagemId).get()));
+        Optional<TriagemModel> triagemOptional = triagemService.findPacienteProfissionalInTriagem(pacienteId, profissionalId, triagemId);
+        if (triagemOptional.isPresent()) {
+            TriagemModel triagem = triagemOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(triagemService.update(triagemRecordDto, triagem));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Triagem não encontrada.");
+        }
     }
 
     @Operation(summary = "Listar Triagens Completas", description = "Retorna uma lista paginada de triagens com informações detalhdas")
@@ -114,12 +131,11 @@ public class TriagemController {
     })
 
     @GetMapping("/completa")
-    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@Parameter(description = "A Opção do Sort não pode ficar Vazio, ou Ritire o Sort para não acusar Erro", required = false) Pageable pageable){
-        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(pageable );
+    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@RequestParam(required = false)  String cpf, Pageable pageable){
+
+        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(pageable,cpf );
+
         return ResponseEntity.status(HttpStatus.OK).body(triagemCompleta);
     }
-
-
-
 
 }

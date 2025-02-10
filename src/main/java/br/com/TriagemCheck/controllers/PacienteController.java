@@ -3,7 +3,6 @@ package br.com.TriagemCheck.controllers;
 import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.services.PacienteService;
-import br.com.TriagemCheck.specificationTemplate.SpecificationTemplate;
 import br.com.TriagemCheck.validations.PacienteValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -73,20 +73,16 @@ public class PacienteController {
                                          @Parameter(description = "Dados do paciente") @RequestBody @Valid PacienteRecordDto pacienteRecordDto){
         logger.debug("PUT alterarPaciente  pacienteRecordDto received {} ", pacienteRecordDto);
 
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(pacienteService.update(pacienteRecordDto, pacienteService.findById(pacienteId).get()));
+        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
+        if (pacienteOptional.isPresent()) {
+            PacienteModel paciente = pacienteOptional.get();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(pacienteService.update(pacienteRecordDto, paciente));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente not found.");
+        }
 
     }
-    @Operation(summary = "Obter um paciente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
-    })
-    @GetMapping("/{pacienteId}")
-    public ResponseEntity<Object> getOne(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
-        return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findById(pacienteId).get());
-    }
-
     @Operation(summary = "Deletar um paciente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Paciente deletado com sucesso"),
@@ -95,9 +91,40 @@ public class PacienteController {
     })
     @DeleteMapping("/{pacienteId}")
     public ResponseEntity<Object> delete(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
-        logger.debug("Delete Paciente received {} ", pacienteId);
-        pacienteService.delete(pacienteService.findById(pacienteId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("Paciente deleted successfully.");
+        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
+        if (pacienteOptional.isPresent()) {
+            pacienteService.delete(pacienteOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Paciente deleted successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente not found.");
+        }
+    }
+
+    @Operation(summary = "Obter um paciente por CPF")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+    })
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<Object> getOneCpf(@Parameter(description = "CPF do paciente") @PathVariable(value = "cpf") String cpf ){
+
+        return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findByCpf(cpf));
+    }
+
+    @Operation(summary = "Obter um paciente por UUID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Paciente encontrado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Paciente não encontrado")
+    })
+    @GetMapping("/id/{pacienteId}")
+    public ResponseEntity<Object> getOne(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
+
+        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
+        if (pacienteOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(pacienteOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
 

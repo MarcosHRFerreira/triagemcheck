@@ -16,9 +16,11 @@ public interface PacienteService {
 
     Page<PacienteModel> findAll(Pageable pageable);
 
-    Optional<PacienteModel> findById(UUID pacienteId);
+    Optional<PacienteModel> findByCpf( String cpf);
 
     PacienteModel update(PacienteRecordDto pacienteRecordDto,PacienteModel pacienteModel);
 
     void delete(PacienteModel pacienteModel);
+
+    Optional<PacienteModel> findById(UUID pacienteId);
 }

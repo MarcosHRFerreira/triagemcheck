@@ -100,6 +100,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorRecordResponse);
     }
 
+    @ExceptionHandler(EmptySortException.class)
+    public ResponseEntity<ErrorRecordResponse> handleEmptySortException(EmptySortException ex) {
+        var errorRecordResponse = new ErrorRecordResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
+                null
+        );
+        logger.error("EmptySortException message: {} ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
+    }
+
 
 
 }

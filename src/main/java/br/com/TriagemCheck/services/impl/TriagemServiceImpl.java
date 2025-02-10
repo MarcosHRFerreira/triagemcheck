@@ -3,7 +3,7 @@ package br.com.TriagemCheck.services.impl;
 import br.com.TriagemCheck.converter.TriagemConverter;
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.enums.Especialidade;
+import br.com.TriagemCheck.enums.StatusOperacional;
 import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.PacienteModel;
@@ -43,8 +43,8 @@ public class TriagemServiceImpl implements TriagemService {
         triagemModel.setPaciente(pacienteModel);
         triagemModel.setProfissional(profissionalModel);
 
-        if(!profissionalModel.getEspecialidade().equals(Especialidade.ENFERMAGEM)){
-            throw new NoValidException("Erro: Apenas profissionais de enfermagem têm permissão para abrir a triagem devido a requisitos de protocolo.");
+        if(profissionalModel.getStatusOperacional().equals(StatusOperacional.INATIVO)){
+            throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
         }
 
         return triagemRepository.save(triagemModel);
@@ -77,8 +77,8 @@ public class TriagemServiceImpl implements TriagemService {
        return  triagemRepository.save(triagemModel);
     }
     @Override
-    public Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable) {
-        Page<TriagemCompletaProjection> triagemProjections = triagemRepository.findTriagemCompleta(pageable);
+    public Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable,String cpf) {
+        Page<TriagemCompletaProjection> triagemProjections = triagemRepository.findTriagemCompleta(null,pageable);
         return triagemProjections.map(triagemConverter::convertToDto );
     }
 

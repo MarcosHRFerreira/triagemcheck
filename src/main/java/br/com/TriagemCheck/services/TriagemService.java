@@ -24,5 +24,5 @@ public interface TriagemService {
 
     TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel);
 
-    Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable);
+    Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable, String cpf);
 }
