@@ -1,10 +1,13 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.dtos.PacienteRecordDto;
+import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.*;
 import br.com.TriagemCheck.repositories.*;
 import br.com.TriagemCheck.services.PacienteService;
+import br.com.TriagemCheck.validations.ValidaCPF;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +34,12 @@ public class PacienteServiceImpl implements PacienteService {
     @Override
     public PacienteModel save(PacienteRecordDto pacienteRecordDto) {
 
+        if(!ValidaCPF.isCPF(pacienteRecordDto.cpf())){
+            throw new NoValidException("Erro: CPF inválido.");
+        }
+
         var pacienteModel=new PacienteModel();
-        BeanUtils.copyProperties(pacienteRecordDto,pacienteModel);
+        CustomBeanUtils.copyProperties(pacienteRecordDto,pacienteModel);
 
         pacienteModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -59,7 +66,7 @@ public class PacienteServiceImpl implements PacienteService {
     }
     @Override
     public PacienteModel update(PacienteRecordDto pacienteRecordDto, PacienteModel pacienteModel) {
-        BeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
+        CustomBeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
         pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
         return pacienteRepository.save(pacienteModel);
     }

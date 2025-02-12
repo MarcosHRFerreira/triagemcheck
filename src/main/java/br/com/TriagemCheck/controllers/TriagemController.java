@@ -9,11 +9,14 @@ import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.ProfissionalService;
 import br.com.TriagemCheck.services.TriagemService;
 import br.com.TriagemCheck.validations.TriagemValidator;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -21,11 +24,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/triagens")
 public class TriagemController {
@@ -53,11 +58,11 @@ public class TriagemController {
     @PostMapping("/pacientes/{pacienteId}/profissionais/{profissionalId}/triagens")
     public ResponseEntity<Object> savarTriagem(@Parameter(description = "ID do paciente", required = true) @PathVariable(value = "pacienteId") UUID pacienteId,
                                                @Parameter(description = "ID do profissional", required = true) @PathVariable(value="profissionalId") UUID profissionalId,
-                                               @Parameter(description = "Dados da triagem", required = true) @RequestBody TriagemRecordDto triagemRecordDto, Errors errors){
+                                               @Parameter(description = "Dados da triagem", required = true) @RequestBody @Valid TriagemRecordDto triagemRecordDto, Errors errors){
 
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
 
-        triagemValidator.validate(triagemRecordDto, errors);
+   //     triagemValidator.validate(triagemRecordDto, errors);
 
         Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
         Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
@@ -129,9 +134,14 @@ public class TriagemController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de triagens completas retornada com sucesso")
     })
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "Página a ser carregada", defaultValue = "0"),
+            @ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Tamanho da página", defaultValue = "20"),
+            @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", value = "Critério de ordenação no formato campo,asc ou campo,desc")
+    })
 
     @GetMapping("/completa")
-    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@RequestParam(required = false)  String cpf, Pageable pageable){
+    public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@Parameter(description = "CPF do Paciente") @RequestParam(required = false)  String cpf, Pageable pageable){
 
         Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(pageable,cpf );
 

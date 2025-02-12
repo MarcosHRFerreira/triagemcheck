@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -21,11 +22,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/feedbackpacientes")
 public class FeedbackPacienteController {
@@ -53,7 +56,7 @@ public class FeedbackPacienteController {
 
     public ResponseEntity<Object> save(@Parameter(description = "ID do paciente")@PathVariable(value ="pacienteId") UUID pacienteId,
                                        @Parameter(description = "ID da triagem")@PathVariable(value="triagemId") UUID triagemId,
-            @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
+                                       @RequestBody @Valid FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
 

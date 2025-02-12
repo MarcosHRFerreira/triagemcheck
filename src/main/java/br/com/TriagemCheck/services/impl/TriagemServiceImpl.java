@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.converter.TriagemConverter;
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
@@ -9,10 +10,10 @@ import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
+import br.com.TriagemCheck.repositories.ProfissionalRepository;
 import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.TriagemCompletaProjection;
 import br.com.TriagemCheck.services.TriagemService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,21 +29,33 @@ public class TriagemServiceImpl implements TriagemService {
     final TriagemRepository triagemRepository;
 
     final TriagemConverter triagemConverter = new TriagemConverter();
+    private final ProfissionalRepository profissionalRepository;
 
-    public TriagemServiceImpl(TriagemRepository triagemRepository) {
+    public TriagemServiceImpl(TriagemRepository triagemRepository,
+                              ProfissionalRepository profissionalRepository) {
         this.triagemRepository = triagemRepository;
+        this.profissionalRepository = profissionalRepository;
     }
 
     @Override
     public TriagemModel save(TriagemRecordDto triagemRecordDto, PacienteModel pacienteModel, ProfissionalModel profissionalModel) {
         var triagemModel = new TriagemModel();
-        BeanUtils.copyProperties(triagemRecordDto, triagemModel);
+        CustomBeanUtils.copyProperties(triagemRecordDto, triagemModel);
         triagemModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         triagemModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
         triagemModel.setPaciente(pacienteModel);
         triagemModel.setProfissional(profissionalModel);
 
+
+        Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
+        if (!existingRecord.isPresent()) {
+            throw new NoValidException("Erro: Registro de enfermagem não existe.");
+        }
+
+        if(profissionalModel.getCrm().isEmpty()){
+            throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
+        }
         if(profissionalModel.getStatusOperacional().equals(StatusOperacional.INATIVO)){
             throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
         }
@@ -72,7 +85,13 @@ public class TriagemServiceImpl implements TriagemService {
     }
     @Override
     public TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel) {
-       BeanUtils.copyProperties(triagemRecordDto,triagemModel);
+
+        Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
+        if (!existingRecord.isPresent()) {
+            throw new NoValidException("Erro: Registro de enfermagem não existe.");
+        }
+
+       CustomBeanUtils.copyProperties(triagemRecordDto,triagemModel);
        triagemModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
        return  triagemRepository.save(triagemModel);
     }

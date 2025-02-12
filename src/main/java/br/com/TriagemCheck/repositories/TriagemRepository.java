@@ -26,22 +26,25 @@ public interface TriagemRepository extends JpaRepository<TriagemModel, UUID> {
     Optional<TriagemModel> findProficionalIntoTriagem(UUID profissionalId);
 
 
-    @Query(value="SELECT t.triagem_id AS triagemId, t.cor_protocolo AS corProtocolo, t.data_alteracao AS dataAlteracao, t.data_criacao AS dataCriacao, t.severidade AS severidade, t.sintomas AS sintomas, " +
+    @Query(value = "SELECT t.triagem_id AS triagemId, t.cor_protocolo AS corProtocolo, t.data_alteracao AS dataAlteracao, t.data_criacao AS dataCriacao, t.severidade AS severidade, t.sintomas AS sintomas, " +
             "p.nome AS nomePaciente, p.cpf AS cpfPaciente, " +
-            "pr.nome AS nomeProfissional, pr.especialidade AS especialidadeProfissional, " +
+            "pr.nome AS nomeProfissional, pr.especialidade AS especialidadeProfissional, pr.crm AS crmProfissional, " +
             "r.desfecho AS desfecho, r.diagnostico AS diagnostico, r.tratamento AS tratamento, " +
             "fp.avaliacaoeficacia AS avaliacaoEficacia, fp.avaliacaoseveridade AS avaliacaoSeveridade, fp.comentario AS comentarioProfissional, " +
-            "fpa.avaliacao AS avaliacaoPaciente, fpa.comentario AS comentarioPaciente " +
+            "fpa.avaliacao AS avaliacaoPaciente, fpa.comentario AS comentarioPaciente, " +
+            "pr2.nome AS nomeEnfermagem, pr2.profissional_id AS profissionalIdEnfermagem " +
             "FROM tb_triagens t " +
             "JOIN tb_pacientes p ON t.paciente_paciente_id = p.paciente_id " +
             "JOIN tb_profissionais pr ON t.profissional_profissional_id = pr.profissional_id " +
+            "JOIN tb_profissionais pr2 ON t.enfermagem_id = pr2.profissional_id " +
             "JOIN tb_resultclinicos r ON t.triagem_id = r.triagem_triagem_id " +
             "JOIN tb_feedbackprofissional fp ON t.triagem_id = fp.triagem_triagem_id " +
             "JOIN tb_feedbackpacientes fpa ON t.triagem_id = fpa.triagem_triagem_id " +
             "WHERE (:cpf IS NULL OR p.cpf = :cpf)",
             countQuery = "SELECT count(*) FROM tb_triagens t " +
                     "JOIN tb_pacientes p ON t.paciente_paciente_id = p.paciente_id " +
-                    "JOIN tb_profissionais  pr ON t.profissional_profissional_id = pr.profissional_id " +
+                    "JOIN tb_profissionais pr ON t.profissional_profissional_id = pr.profissional_id " +
+                    "JOIN tb_profissionais pr2 ON t.enfermagem_id = pr2.profissional_id " +
                     "JOIN tb_resultclinicos r ON t.triagem_id = r.triagem_triagem_id " +
                     "JOIN tb_feedbackprofissional fp ON t.triagem_id = fp.triagem_triagem_id " +
                     "JOIN tb_feedbackpacientes fpa ON t.triagem_id = fpa.triagem_triagem_id " +

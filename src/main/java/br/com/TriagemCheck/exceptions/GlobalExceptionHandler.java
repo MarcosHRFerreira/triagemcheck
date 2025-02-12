@@ -100,15 +100,33 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorRecordResponse);
     }
 
-    @ExceptionHandler(EmptySortException.class)
-    public ResponseEntity<ErrorRecordResponse> handleEmptySortException(EmptySortException ex) {
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
+//        var errorRecordResponse = new ErrorRecordResponse(
+//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//                "Erro: " + ex.getMessage(),
+//                null
+//        );
+//        logger.error("Exception message: {} ", ex.getMessage());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
+//    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
+        String errorMessage = ex.getMessage();
+        if (errorMessage.contains("violates")) {
+            int endIndex = errorMessage.indexOf("violates") + "violates".length();
+            errorMessage = errorMessage.substring(0, endIndex) + "...";
+        } else {
+            errorMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 100)) + "..."; // Trunca a mensagem para 100 caracteres
+        }
         var errorRecordResponse = new ErrorRecordResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                errorMessage,
                 null
         );
-        logger.error("EmptySortException message: {} ", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
+        logger.error("Exception message: {} ", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
     }
 
 

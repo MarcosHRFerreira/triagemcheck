@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.dtos.ResultClinicoRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.ProfissionalModel;
@@ -7,10 +8,8 @@ import br.com.TriagemCheck.models.ResultClinicosModel;
 import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.repositories.ResultClinicoRepository;
 import br.com.TriagemCheck.services.ResultClinicoService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     public ResultClinicosModel save(ResultClinicoRecordDto resultClinicoRecordDto, TriagemModel triagemModel, ProfissionalModel profissionalModel) {
        var resultClinicoModel = new ResultClinicosModel();
 
-        BeanUtils.copyProperties(resultClinicoRecordDto, resultClinicoModel);
+        CustomBeanUtils.copyProperties(resultClinicoRecordDto, resultClinicoModel);
         resultClinicoModel.setDataCriacao (LocalDateTime.now(ZoneId.of("UTC")));
         resultClinicoModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
@@ -66,7 +65,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
 
     @Override
     public ResultClinicosModel update(ResultClinicoRecordDto resultClinicoRecordDto, ResultClinicosModel resultClinicosModel) {
-       BeanUtils.copyProperties(resultClinicoRecordDto,resultClinicosModel);
+        CustomBeanUtils.copyProperties(resultClinicoRecordDto,resultClinicosModel);
        resultClinicosModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
        return  resultClinicoRepository.save(resultClinicosModel);

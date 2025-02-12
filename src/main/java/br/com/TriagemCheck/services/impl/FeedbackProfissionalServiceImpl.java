@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
@@ -38,7 +39,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
 
         var feedbackprofissionalModel = new FeedbackProfissionalModel();
 
-        BeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackprofissionalModel);
+        CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackprofissionalModel);
 
         feedbackprofissionalModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         feedbackprofissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -79,7 +80,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     @Override
     public FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto,
                                             FeedbackProfissionalModel feedbackProfissionalModel) {
-        BeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackProfissionalModel);
+        CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackProfissionalModel);
         feedbackProfissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
         return  feedbackProfissionalRepository.save(feedbackProfissionalModel);

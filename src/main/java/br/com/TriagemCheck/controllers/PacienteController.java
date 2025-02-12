@@ -16,11 +16,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/pacientes")
 public class PacienteController {
@@ -41,7 +43,7 @@ public class PacienteController {
             @ApiResponse(responseCode = "400", description = "Erro na validação do paciente")
     })
     @PostMapping
-    public ResponseEntity<Object>save(@Parameter(description = "Dados do paciente") @RequestBody PacienteRecordDto pacienteRecordDto, Errors errors){
+    public ResponseEntity<Object>save(@Parameter(description = "Dados do paciente") @RequestBody @Valid PacienteRecordDto pacienteRecordDto, Errors errors){
 
         logger.debug("POST savePaciente pacienteRecordDto recebido {} ", pacienteRecordDto);
 
@@ -70,7 +72,7 @@ public class PacienteController {
     })
     @PutMapping("/{pacienteId}")
     public ResponseEntity<Object> update(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId,
-                                         @Parameter(description = "Dados do paciente") @RequestBody @Valid PacienteRecordDto pacienteRecordDto){
+                                         @Parameter(description = "Dados do paciente") @RequestBody  PacienteRecordDto pacienteRecordDto){
         logger.debug("PUT alterarPaciente  pacienteRecordDto received {} ", pacienteRecordDto);
 
         Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);

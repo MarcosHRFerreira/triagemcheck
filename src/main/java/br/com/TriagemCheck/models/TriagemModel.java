@@ -1,9 +1,11 @@
 package br.com.TriagemCheck.models;
 
+import br.com.TriagemCheck.enums.Severidade;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import br.com.TriagemCheck.enums.CorProtocolo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -25,11 +27,14 @@ public class TriagemModel  implements Serializable {
     @Column(nullable = false, length = 250)
     private String sintomas;
 
-    @Column(nullable = false, length = 250)
-    private String severidade;
+    @Enumerated( EnumType.STRING)
+    private Severidade severidade;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated( EnumType.STRING)
     private CorProtocolo corProtocolo;
+
+    @Column(nullable = false)
+    UUID enfermagemId;
 
     @Column(nullable = false)
     private LocalDateTime dataCriacao;
@@ -79,11 +84,11 @@ public class TriagemModel  implements Serializable {
         this.sintomas = sintomas;
     }
 
-    public String getSeveridade() {
+    public Severidade getSeveridade() {
         return severidade;
     }
 
-    public void setSeveridade(String severidade) {
+    public void setSeveridade(Severidade severidade) {
         this.severidade = severidade;
     }
 
@@ -142,5 +147,22 @@ public class TriagemModel  implements Serializable {
 
     public void setFeedbackprofissional(Set<FeedbackProfissionalModel> feedbackprofissional) {
         this.feedbackprofissional = feedbackprofissional;
+    }
+
+
+    public Set<FeedbackPacienteModel> getFeedbackpaciente() {
+        return feedbackpaciente;
+    }
+
+    public void setFeedbackpaciente(Set<FeedbackPacienteModel> feedbackpaciente) {
+        this.feedbackpaciente = feedbackpaciente;
+    }
+
+    public UUID getEnfermagemId() {
+        return enfermagemId;
+    }
+
+    public void setEnfermagemId(UUID enfermagemId) {
+        this.enfermagemId = enfermagemId;
     }
 }

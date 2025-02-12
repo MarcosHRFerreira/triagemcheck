@@ -13,6 +13,7 @@ public class TriagemConverter {
                 projection.getcorProtocolo(),
                 projection.getseveridade(),
                 projection.getsintomas(),
+                projection.getcrmprofissional(),
                 projection.getnomeProfissional(),
                 projection.getespecialidadeProfissional(),
                 projection.getdesfecho(),
@@ -23,6 +24,8 @@ public class TriagemConverter {
                 projection.getcomentarioProfissional(),
                 projection.getavaliacaoPaciente(),
                 projection.getcomentarioPaciente(),
+                projection.getprofissionalIdEnfermagem(),
+                projection.getnomeEnfermagem(),
                 projection.getdataAlteracao(),
                 projection.getdataCriacao()
         );

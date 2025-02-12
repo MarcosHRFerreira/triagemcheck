@@ -10,6 +10,7 @@ public interface TriagemCompletaProjection {
     String getcorProtocolo();
     String getseveridade();
     String getsintomas();
+    String getcrmprofissional();
     String getnomeProfissional();
     String getespecialidadeProfissional();
     String getdesfecho();
@@ -20,6 +21,8 @@ public interface TriagemCompletaProjection {
     String getcomentarioProfissional();
     Integer getavaliacaoPaciente();
     String getcomentarioPaciente();
+    UUID getprofissionalIdEnfermagem();
+    String getnomeEnfermagem();
     LocalDateTime getdataAlteracao();
     LocalDateTime getdataCriacao();
 }

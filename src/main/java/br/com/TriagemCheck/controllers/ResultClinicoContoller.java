@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -19,11 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/resultclinicos")
 public class ResultClinicoContoller {
@@ -51,7 +54,7 @@ public class ResultClinicoContoller {
     @PostMapping("/triagens/{triagemId}/profissionais/{profissionalId}/resultclinico")
     public ResponseEntity<Object> salvarResultClinico(@Parameter(description = "ID da triagem") @PathVariable(value = "triagemId") UUID triagemId,
                                                       @Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
-            @RequestBody ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
+                                                      @RequestBody @Valid ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
 
         logger.debug("POST saveResultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 

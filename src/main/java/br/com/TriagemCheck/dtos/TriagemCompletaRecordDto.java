@@ -10,6 +10,7 @@ public record TriagemCompletaRecordDto(
         String corProtocolo,
         String severidade,
         String sintomas,
+        String crm,
         String nomeProfissional,
         String especialidadeProfissional,
         String desfecho,
@@ -20,6 +21,8 @@ public record TriagemCompletaRecordDto(
         String comentarioProfissional,
         Integer avaliacaoPaciente,
         String comentarioPaciente,
+        UUID profissionalenfermagem,
+        String enfermagem,
         LocalDateTime dataAlteracao,
         LocalDateTime dataCriacao
 ) {

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
@@ -20,11 +21,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/feedbackprofissionais")
 public class FeedbackProfissionalController {
@@ -50,7 +53,7 @@ public class FeedbackProfissionalController {
     @PostMapping("/profissionais/{profissionalId}/triagens/{triagemId}/feedbackprofissional")
     public ResponseEntity<Object>saveFeedbackProfissional(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
                                                           @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
-            @RequestBody FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
+                                                          @RequestBody @Valid FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, Errors errors){
 
         logger.debug("POST saveFeedbackProfissional feedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 

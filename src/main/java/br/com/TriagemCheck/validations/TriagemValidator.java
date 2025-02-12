@@ -1,6 +1,7 @@
 package br.com.TriagemCheck.validations;
 
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
+import br.com.TriagemCheck.repositories.TriagemRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,9 +12,9 @@ import org.springframework.validation.Validator;
 @Component
 public class TriagemValidator implements Validator {
 
-    Logger logger = LogManager.getLogger(TriagemValidator.class);
+    private static final Logger logger = LogManager.getLogger(TriagemValidator.class);
 
-    private  final Validator validator;
+    private final Validator validator;
 
     public TriagemValidator(@Qualifier("defaultValidator") Validator validator) {
         this.validator = validator;
@@ -21,14 +22,17 @@ public class TriagemValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return false;
+        return TriagemRecordDto.class.equals(clazz);
     }
 
     @Override
-    public void validate(Object o, Errors errors) {
-        TriagemRecordDto triagemRecordDto = (TriagemRecordDto) o;
+    public void validate(Object target, Errors errors) {
+        TriagemRecordDto triagemRecordDto = (TriagemRecordDto) target;
         validator.validate(triagemRecordDto, errors);
 
+//        if (!errors.hasErrors()) {
+//
+//        }
     }
 
 

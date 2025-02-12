@@ -1,5 +1,6 @@
 package br.com.TriagemCheck.services.impl;
 
+import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.*;
@@ -32,7 +33,7 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     public ProfissionalModel save(ProfissionalRecordDto profissionalRecordDto) {
 
         var profissionalModel = new ProfissionalModel();
-        BeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
+        CustomBeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
         profissionalModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
         profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
@@ -61,7 +62,7 @@ public class ProfissionalServiceImpl implements ProfissionalService {
 
     @Override
     public ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel) {
-       BeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
+        CustomBeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
        profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
        return  profissionalRepository.save(profissionalModel);
     }

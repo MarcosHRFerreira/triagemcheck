@@ -17,11 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/profissionais")
 public class ProfissionalController {
@@ -43,7 +45,7 @@ public class ProfissionalController {
     })
 
     @PostMapping
-    public ResponseEntity<Object>salvaMedico(@RequestBody ProfissionalRecordDto profissionalRecordDto, Errors errors){
+    public ResponseEntity<Object>save(@RequestBody @Valid ProfissionalRecordDto profissionalRecordDto, Errors errors){
 
         logger.debug("POST salvaProfissional profissionalRecordDto received {} ", profissionalRecordDto);
 
@@ -79,7 +81,7 @@ public class ProfissionalController {
     })
     @PutMapping("/{profissionalId}")
     public ResponseEntity<Object> update(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
-                                         @RequestBody @Valid ProfissionalRecordDto profissionalRecordDto){
+                                         @RequestBody  ProfissionalRecordDto profissionalRecordDto){
         logger.debug("PUT update  profissionalRecordDto received {} ", profissionalRecordDto);
 
         Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
