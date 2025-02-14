@@ -62,18 +62,8 @@ public class TriagemController {
 
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(triagemService.save(triagemRecordDto, pacienteId, profissionalId));
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-
-        if (pacienteOptional.isPresent() && profissionalOptional.isPresent()) {
-            PacienteModel paciente = pacienteOptional.get();
-            ProfissionalModel profissional = profissionalOptional.get();
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(triagemService.save(triagemRecordDto, paciente, profissional));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente ou profissional não encontrados.");
-        }
     }
 
     @Operation(summary = "Listar Todas as Triagens", description = "Retorna uma lista paginada de todas as triagens")
@@ -82,8 +72,8 @@ public class TriagemController {
     })
     @GetMapping("/todastriagens")
     public ResponseEntity<Page<TriagemModel>> getAll( Pageable pageable)                                                     {
-        Page<TriagemModel>  triagemModelPage =  triagemService.findAll(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(triagemModelPage);
+
+        return ResponseEntity.status(HttpStatus.OK).body(triagemService.findAll(pageable));
     }
 
     @Operation(summary = "Buscar Triagem por ID", description = "Retorna os detalhes de uma triagem específica")
@@ -96,12 +86,7 @@ public class TriagemController {
 
         logger.debug("Get triagens getOne received {} ", triagemId);
 
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
-        if (triagemOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(triagemOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Triagem não encontrada.");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body( triagemService.findById(triagemId));
 
     }
 
@@ -119,16 +104,8 @@ public class TriagemController {
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 
-        Optional<TriagemModel> triagemOptional = triagemService.findPacienteProfissionalInTriagem(pacienteId, profissionalId, triagemId);
-        if (triagemOptional.isPresent()) {
-            TriagemModel triagem = triagemOptional.get();
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(triagemService.update(triagemRecordDto, triagem));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Triagem não encontrada.");
-        }
+            return ResponseEntity.status(HttpStatus.OK).body(triagemService.update(triagemRecordDto, triagemId, pacienteId, profissionalId));
     }
-
     @Operation(summary = "Listar Triagens Completas", description = "Retorna uma lista paginada de triagens com informações detalhdas")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de triagens completas retornada com sucesso")
@@ -138,13 +115,10 @@ public class TriagemController {
             @ApiImplicitParam(name = "size", dataType = "int", paramType = "query", value = "Tamanho da página", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", dataType = "string", paramType = "query", value = "Critério de ordenação no formato campo,asc ou campo,desc")
     })
-
     @GetMapping("/completa")
     public ResponseEntity<Page<TriagemCompletaRecordDto>> getTriagemCompleta(@Parameter(description = "CPF do Paciente") @RequestParam(required = false)  String cpf, Pageable pageable){
 
-        Page<TriagemCompletaRecordDto> triagemCompleta = triagemService.findTriagemCompleta(pageable,cpf );
-
-        return ResponseEntity.status(HttpStatus.OK).body(triagemCompleta);
+        return ResponseEntity.status(HttpStatus.OK).body( triagemService.findTriagemCompleta(pageable,cpf ));
     }
 
 }

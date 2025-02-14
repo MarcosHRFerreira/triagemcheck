@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface TriagemService {
 
-    TriagemModel save(TriagemRecordDto triagemRecordDto, PacienteModel pacienteModel, ProfissionalModel profissionalModel);
+    TriagemModel save(TriagemRecordDto triagemRecordDto, UUID pacienteId, UUID profissionalId);
 
     Optional<TriagemModel> findById(UUID triagemId);
 
@@ -22,7 +22,7 @@ public interface TriagemService {
 
     Optional<TriagemModel> findPacienteProfissionalInTriagem(UUID pacienteId, UUID profissionalId, UUID triagemId);
 
-    TriagemModel update(TriagemRecordDto triagemRecordDto, TriagemModel triagemModel);
+    TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId, UUID profissioanlId, UUID pacienteId );
 
     Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable, String cpf);
 }
