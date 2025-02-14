@@ -4,8 +4,6 @@ package br.com.TriagemCheck.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

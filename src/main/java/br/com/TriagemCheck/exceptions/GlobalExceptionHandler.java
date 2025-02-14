@@ -111,21 +111,32 @@ public class GlobalExceptionHandler {
 //        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
 //    }
 
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
+//        String errorMessage = ex.getMessage();
+//        if (errorMessage.contains("violates")) {
+//            int endIndex = errorMessage.indexOf("violates") + "violates".length();
+//            errorMessage = errorMessage.substring(0, endIndex) + "...";
+//        } else {
+//            errorMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 100)) + "..."; // Trunca a mensagem para 100 caracteres
+//        }
+//        var errorRecordResponse = new ErrorRecordResponse(
+//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//                errorMessage,
+//                null
+//        );
+//        logger.error("Exception message: {} ", ex.getMessage());
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
+//    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
-        String errorMessage = ex.getMessage();
-        if (errorMessage.contains("violates")) {
-            int endIndex = errorMessage.indexOf("violates") + "violates".length();
-            errorMessage = errorMessage.substring(0, endIndex) + "...";
-        } else {
-            errorMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 100)) + "..."; // Trunca a mensagem para 100 caracteres
-        }
+    public ResponseEntity<ErrorRecordResponse> handleGeneralException(Exception ex) {
         var errorRecordResponse = new ErrorRecordResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                errorMessage,
+                "Erro interno do servidor.",
                 null
         );
-        logger.error("Exception message: {} ", ex.getMessage());
+        logger.error("Exception message: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
     }
 

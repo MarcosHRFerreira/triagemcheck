@@ -62,7 +62,6 @@ public class TriagemController {
 
         logger.debug("POST savarTriagem triagemRecordDto received {} ", triagemRecordDto);
 
-   //     triagemValidator.validate(triagemRecordDto, errors);
 
         Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
         Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);

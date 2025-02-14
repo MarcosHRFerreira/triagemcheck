@@ -4,7 +4,6 @@ import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
 import br.com.TriagemCheck.models.ProfissionalModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,7 +18,7 @@ public interface ProfissionalService {
 
     Page<ProfissionalModel> findAll(Pageable pageable);
 
-    ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel);
+    ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, UUID profissionalId);
 
-    void delete(ProfissionalModel profissionalModel);
+    void delete(UUID profissionalId);
 }

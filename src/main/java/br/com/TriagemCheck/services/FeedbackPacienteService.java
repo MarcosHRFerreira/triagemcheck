@@ -2,18 +2,15 @@ package br.com.TriagemCheck.services;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
-import br.com.TriagemCheck.models.PacienteModel;
-import br.com.TriagemCheck.models.TriagemModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 import java.util.UUID;
 
 
 public interface FeedbackPacienteService {
-    FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, PacienteModel pacienteModel, TriagemModel triagemModel);
+    FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID pacienteId, UUID triagemId);
 
     Page<FeedbackPacienteModel> findAll( Pageable pageable);
 
@@ -21,7 +18,7 @@ public interface FeedbackPacienteService {
 
     Optional<FeedbackPacienteModel> findPacienteTriagemInFeedback(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId) ;
 
-    FeedbackPacienteModel update(FeedbackPacienteRecordDto feedbackPacienteRecordDto, FeedbackPacienteModel feedbackPacienteModel);
+    FeedbackPacienteModel update(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto);
 
-    void delete(FeedbackPacienteModel feedbackPacienteModel);
+    void delete(UUID feedbackpacienteId);
 }

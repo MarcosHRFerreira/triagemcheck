@@ -3,6 +3,7 @@ package br.com.TriagemCheck.dtos;
 import br.com.TriagemCheck.enums.Especialidade;
 import br.com.TriagemCheck.enums.StatusOperacional;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -24,6 +25,7 @@ public record ProfissionalRecordDto(
         String telefone,
         @Schema(description = "Email para contato do profissional", example = "roberto@gmail.com")
         @NotBlank(message = "Email é necessário")
+        @Email(message = "O e-mail deve ser válido")
         String email
 
 ) {

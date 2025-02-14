@@ -1,7 +1,6 @@
 package br.com.TriagemCheck.validations;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
-import br.com.TriagemCheck.repositories.FeedbackPacienteRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,12 +14,9 @@ public class FeedbackPacienteValidator implements Validator {
     Logger logger = LogManager.getLogger(FeedbackPacienteValidator.class);
 
     private  final Validator validator;
-    private final FeedbackPacienteRepository feedbackPacienteRepository;
 
-    public FeedbackPacienteValidator(@Qualifier("defaultValidator") Validator validator,
-                                     FeedbackPacienteRepository feedbackPacienteRepository) {
+    public FeedbackPacienteValidator(@Qualifier("defaultValidator") Validator validator) {
         this.validator = validator;
-        this.feedbackPacienteRepository = feedbackPacienteRepository;
     }
 
     @Override

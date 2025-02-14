@@ -49,10 +49,6 @@ public class ProfissionalController {
 
         logger.debug("POST salvaProfissional profissionalRecordDto received {} ", profissionalRecordDto);
 
-        profissionalValidator.validate(profissionalRecordDto, errors);
-        if(errors.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(profissionalService.save(profissionalRecordDto));
     }
 
@@ -67,12 +63,10 @@ public class ProfissionalController {
     public ResponseEntity<Object> getOne(@PathVariable(value = "profissionalId") UUID profissionalId){
         logger.debug("Get getOne  profissionalId received {} ",profissionalId);
 
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-        if (profissionalOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(profissionalOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional não encontrado.");
-        }
+
+       Optional<ProfissionalModel> profissional = profissionalService.findById(profissionalId);
+        return ResponseEntity.status(HttpStatus.OK).body(profissional);
+
     }
     @Operation(summary = "Busca um profissional pelo ID")
     @ApiResponses(value = {
@@ -84,14 +78,7 @@ public class ProfissionalController {
                                          @RequestBody  ProfissionalRecordDto profissionalRecordDto){
         logger.debug("PUT update  profissionalRecordDto received {} ", profissionalRecordDto);
 
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-        if (profissionalOptional.isPresent()) {
-            ProfissionalModel profissional = profissionalOptional.get();
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(profissionalService.update(profissionalRecordDto, profissional));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional não encontrado.");
-        }
+            return ResponseEntity.status(HttpStatus.OK).body(profissionalService.update(profissionalRecordDto, profissionalId));
     }
 
     @Operation(summary = "Deleta um profissional pelo ID")
@@ -104,13 +91,9 @@ public class ProfissionalController {
     public ResponseEntity<Object> delete(@Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId){
         logger.debug("Delete Profissional profissionalId received {} ", profissionalId);
 
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-        if (profissionalOptional.isPresent()) {
-            profissionalService.delete(profissionalOptional.get());
+            profissionalService.delete(profissionalId);
             return ResponseEntity.status(HttpStatus.OK).body("Profissional deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+
     }
 
 }

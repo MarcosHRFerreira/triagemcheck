@@ -4,7 +4,6 @@ import br.com.TriagemCheck.dtos.PacienteRecordDto;
 import br.com.TriagemCheck.models.PacienteModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,9 +17,9 @@ public interface PacienteService {
 
     Optional<PacienteModel> findByCpf( String cpf);
 
-    PacienteModel update(PacienteRecordDto pacienteRecordDto,PacienteModel pacienteModel);
+    PacienteModel update(PacienteRecordDto pacienteRecordDto, UUID pacienteId);
 
-    void delete(PacienteModel pacienteModel);
+    void delete(UUID pacienteId);
 
     Optional<PacienteModel> findById(UUID pacienteId);
 }

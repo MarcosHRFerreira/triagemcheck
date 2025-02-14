@@ -26,9 +26,8 @@ public class PacienteModel implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID pacienteId;
 
-    @Column(nullable = false)
-    @CPF
-	private String cpf;
+    @Column(nullable = false, unique = true)
+  	private String cpf;
     @Column(nullable = false, length = 150)
 	private String  nome;
     @Column(nullable = false)
@@ -37,7 +36,6 @@ public class PacienteModel implements Serializable {
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
     @Column(length = 150)
-    @Email
     private String  email;
     @Column(nullable = false, length = 250)
     private String logradouro;

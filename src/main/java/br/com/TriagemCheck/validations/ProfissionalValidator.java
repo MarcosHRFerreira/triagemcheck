@@ -41,7 +41,7 @@ public class ProfissionalValidator implements Validator{
         }
     }
 
-    private void validateVerificaStatusProfissional(ProfissionalRecordDto profissionalRecordDto, Errors errors) {
+    public void validateVerificaStatusProfissional(ProfissionalRecordDto profissionalRecordDto, Errors errors) {
         if (profissionalRecordDto.statusOperacional().equals(StatusOperacional.INATIVO)){
             errors.rejectValue("statusOperacional", "statusOperacionalConflict", "O Status Operacional deve estar Ativo.");
             logger.error("Error validation Status Operacional: O Status Operacional deve estar Ativo.");
@@ -49,7 +49,7 @@ public class ProfissionalValidator implements Validator{
 
     }
 
-    private void validateMedicoCrm(ProfissionalRecordDto profissionalRecordDto, Errors errors) {
+    public void validateMedicoCrm(ProfissionalRecordDto profissionalRecordDto, Errors errors) {
         String crm = profissionalRecordDto.crm();
         if (!profissionalRecordDto.especialidade().equals(Especialidade.ENFERMAGEM)) {
             if (crm.isEmpty()) {

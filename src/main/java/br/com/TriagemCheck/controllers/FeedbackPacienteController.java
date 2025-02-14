@@ -2,8 +2,6 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
-import br.com.TriagemCheck.models.PacienteModel;
-import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.FeedbackPacienteService;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.TriagemService;
@@ -25,7 +23,6 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Validated
@@ -53,27 +50,14 @@ public class FeedbackPacienteController {
             @ApiResponse(responseCode = "400", description = "Erro na validação do feedback")
     })
     @PostMapping("/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-
     public ResponseEntity<Object> save(@Parameter(description = "ID do paciente")@PathVariable(value ="pacienteId") UUID pacienteId,
                                        @Parameter(description = "ID da triagem")@PathVariable(value="triagemId") UUID triagemId,
                                        @RequestBody @Valid FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
 
-        feedbackPacienteValidator.validate(feedbackPacienteRecordDto, errors);
-        if (errors.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
-        }
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto, pacienteId, triagemId));
 
-        if (pacienteOptional.isPresent() && triagemOptional.isPresent()) {
-            PacienteModel paciente = pacienteOptional.get();
-            TriagemModel triagem = triagemOptional.get();
-            return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto, paciente, triagem));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente ou triagem não encontrados.");
-        }
     }
     @Operation(summary = "Obter todos os feedbacks dos pacientes")
     @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
@@ -89,18 +73,14 @@ public class FeedbackPacienteController {
     @GetMapping("/{feedbackpacienteId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
 
-        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findById(feedbackpacienteId);
-        if (feedbackOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(feedbackOptional.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+         return ResponseEntity.status(HttpStatus.OK).body(feedbackPacienteService.findById(feedbackpacienteId));
     }
 
     @Operation(summary = "Atualizar feedback do paciente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Feedback atualizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
+            @ApiResponse(responseCode = "404", description = "Feedback não encontrado"),
+            @ApiResponse(responseCode = "409", description = "Avaliacao tem que ser entre 1 e 5.")
     })
     @PutMapping("/{feedbackpacienteId}/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
     public ResponseEntity<Object> update(@Parameter(description = "ID do paciente") @PathVariable(value ="pacienteId") UUID pacienteId,
@@ -110,15 +90,11 @@ public class FeedbackPacienteController {
 
         logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
 
-        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findPacienteTriagemInFeedback(pacienteId, triagemId, feedbackpacienteId);
-        if (feedbackOptional.isPresent()) {
-            FeedbackPacienteModel feedbackPaciente = feedbackOptional.get();
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(feedbackPacienteService.update(feedbackPacienteRecordDto, feedbackPaciente));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
-        }
+                    .body(feedbackPacienteService.update(pacienteId , triagemId, feedbackpacienteId,feedbackPacienteRecordDto));
+
     }
+
     @Operation(summary = "Deletar feedback do paciente")
     @ApiResponse(responseCode = "200", description = "Feedback deletado com sucesso")
     @ApiResponse(responseCode = "404", description = "Feedback não encontrado")
@@ -127,14 +103,7 @@ public class FeedbackPacienteController {
     public ResponseEntity<Object> delete(@Parameter(description = "ID do feedback do paciente") @PathVariable(value = "feedbackpacienteId") UUID feedbackpacienteId){
         logger.debug("DELETE delete FeedbackPacientes feedbackpacienteId received {} ", feedbackpacienteId);
 
-        Optional<FeedbackPacienteModel> feedbackOptional = feedbackPacienteService.findById(feedbackpacienteId);
-        if (feedbackOptional.isPresent()) {
-            feedbackPacienteService.delete(feedbackOptional.get());
-            return ResponseEntity.status(HttpStatus.OK).body("Feedback Paciente deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
-        }
-
+        feedbackPacienteService.delete(feedbackpacienteId);
+        return ResponseEntity.status(HttpStatus.OK).body("Feedback deletado com sucesso.");
     }
-
 }

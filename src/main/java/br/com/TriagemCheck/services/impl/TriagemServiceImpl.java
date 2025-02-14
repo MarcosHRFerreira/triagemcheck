@@ -38,7 +38,7 @@ public class TriagemServiceImpl implements TriagemService {
     }
 
     @Override
-    public TriagemModel save(TriagemRecordDto triagemRecordDto, PacienteModel pacienteModel, ProfissionalModel profissionalModel) {
+    public TriagemModel save(TriagemRecordDto triagemRecordDto,  PacienteModel pacienteModel, ProfissionalModel profissionalModel) {
         var triagemModel = new TriagemModel();
         CustomBeanUtils.copyProperties(triagemRecordDto, triagemModel);
         triagemModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -52,7 +52,6 @@ public class TriagemServiceImpl implements TriagemService {
         if (!existingRecord.isPresent()) {
             throw new NoValidException("Erro: Registro de enfermagem não existe.");
         }
-
         if(profissionalModel.getCrm().isEmpty()){
             throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
         }

@@ -25,9 +25,9 @@ public class ProfissionalModel implements Serializable  {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID profissionalId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String crm;
-    @Column(nullable = false,length = 150)
+    @Column(nullable = false,  length = 150)
     private String nome;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

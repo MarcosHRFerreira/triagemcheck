@@ -7,8 +7,8 @@ import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.*;
 import br.com.TriagemCheck.repositories.*;
 import br.com.TriagemCheck.services.PacienteService;
+import br.com.TriagemCheck.validations.EmailValidator;
 import br.com.TriagemCheck.validations.ValidaCPF;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,19 +23,21 @@ import java.util.UUID;
 public class PacienteServiceImpl implements PacienteService {
 
     final PacienteRepository pacienteRepository;
-    private final TriagemRepository triagemRepository;
 
-    public PacienteServiceImpl(PacienteRepository pacienteRepository, TriagemRepository triagemRepository) {
+    public PacienteServiceImpl(PacienteRepository pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
-        this.triagemRepository = triagemRepository;
-    }
 
+    }
+    EmailValidator emailValidator = EmailValidator.getInstance();
 
     @Override
     public PacienteModel save(PacienteRecordDto pacienteRecordDto) {
 
         if(!ValidaCPF.isCPF(pacienteRecordDto.cpf())){
             throw new NoValidException("Erro: CPF inválido.");
+        }
+        if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
+            throw new NoValidException("Erro: Email inválido.");
         }
 
         var pacienteModel=new PacienteModel();
@@ -65,20 +67,38 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteModelOptional;
     }
     @Override
-    public PacienteModel update(PacienteRecordDto pacienteRecordDto, PacienteModel pacienteModel) {
+    public PacienteModel update(PacienteRecordDto pacienteRecordDto, UUID pacienteId) {
+
+        if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
+            throw new NoValidException("Erro: Email inválido.");
+        }
+        if(!ValidaCPF.isCPF(pacienteRecordDto.cpf())){
+            throw new NoValidException("Erro: CPF inválido.");
+        }
+        Optional<PacienteModel> pacienteModelOptional = findById(pacienteId) ;
+
+        if (pacienteModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Paciente não encontrado.");
+        }
+
+        var pacienteModel = new PacienteModel();
+
         CustomBeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
         pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
         return pacienteRepository.save(pacienteModel);
     }
-
     @Transactional
     @Override
-    public void delete(PacienteModel pacienteModel) {
-        Optional<TriagemModel> triagemModelOptional = triagemRepository.findPacienteIntoTriagem(pacienteModel.getPacienteId());
-        if (!triagemModelOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Existe Triagem para esse Paciente, não será permitido o Delete. ");
+    public void delete(UUID pacienteId) {
+
+        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
+
+        if (pacienteModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Paciente não encontrado.");
         }
-        pacienteRepository.delete(pacienteModel);
+
+        pacienteRepository.deleteById(pacienteId);
+
     }
     @Override
     public Optional<PacienteModel> findById(UUID pacienteId) {

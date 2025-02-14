@@ -47,10 +47,6 @@ public class PacienteController {
 
         logger.debug("POST savePaciente pacienteRecordDto recebido {} ", pacienteRecordDto);
 
-        pacienteValidator.validate(pacienteRecordDto, errors);
-        if(errors.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteService.save(pacienteRecordDto));
 
     }
@@ -75,16 +71,10 @@ public class PacienteController {
                                          @Parameter(description = "Dados do paciente") @RequestBody  PacienteRecordDto pacienteRecordDto){
         logger.debug("PUT alterarPaciente  pacienteRecordDto received {} ", pacienteRecordDto);
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        if (pacienteOptional.isPresent()) {
-            PacienteModel paciente = pacienteOptional.get();
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(pacienteService.update(pacienteRecordDto, paciente));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente not found.");
-        }
+            return ResponseEntity.status(HttpStatus.OK).body(pacienteService.update(pacienteRecordDto, pacienteId));
 
     }
+
     @Operation(summary = "Deletar um paciente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Paciente deletado com sucesso"),
@@ -93,13 +83,9 @@ public class PacienteController {
     })
     @DeleteMapping("/{pacienteId}")
     public ResponseEntity<Object> delete(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        if (pacienteOptional.isPresent()) {
-            pacienteService.delete(pacienteOptional.get());
+
+            pacienteService.delete(pacienteId);
             return ResponseEntity.status(HttpStatus.OK).body("Paciente deleted successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente not found.");
-        }
     }
 
     @Operation(summary = "Obter um paciente por CPF")
@@ -121,12 +107,8 @@ public class PacienteController {
     @GetMapping("/id/{pacienteId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do paciente") @PathVariable(value = "pacienteId") UUID pacienteId){
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        if (pacienteOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(pacienteOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(pacienteService.findById(pacienteId));
+
     }
 
 

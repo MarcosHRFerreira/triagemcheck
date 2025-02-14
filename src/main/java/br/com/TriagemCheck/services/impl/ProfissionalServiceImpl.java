@@ -2,15 +2,17 @@ package br.com.TriagemCheck.services.impl;
 
 import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.dtos.ProfissionalRecordDto;
+import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.*;
 import br.com.TriagemCheck.repositories.ProfissionalRepository;
 import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.ProfissionalService;
-import org.springframework.beans.BeanUtils;
+import br.com.TriagemCheck.validations.EmailValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,16 +23,28 @@ import java.util.UUID;
 public class ProfissionalServiceImpl implements ProfissionalService {
 
     final ProfissionalRepository profissionalRepository;
-    private final TriagemRepository triagemRepository;
+    final TriagemRepository triagemRepository;
+
 
     public ProfissionalServiceImpl(ProfissionalRepository profissionalRepository,
-                                   TriagemRepository triagemRepository) {
+                                   TriagemRepository triagemRepository
+    ) {
         this.profissionalRepository = profissionalRepository;
         this.triagemRepository = triagemRepository;
+
     }
+    EmailValidator emailValidator = EmailValidator.getInstance();
 
     @Override
     public ProfissionalModel save(ProfissionalRecordDto profissionalRecordDto) {
+
+        if (!emailValidator.isValid(profissionalRecordDto.email())) {
+            throw new NoValidException("Erro: Email inválido.");
+        }
+
+        if (profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
+            throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
+        }
 
         var profissionalModel = new ProfissionalModel();
         CustomBeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
@@ -45,13 +59,15 @@ public class ProfissionalServiceImpl implements ProfissionalService {
         return profissionalRepository.existsBycrm(crm);
     }
 
-
     @Override
     public Optional<ProfissionalModel> findById(UUID profissionalId){
+
         Optional<ProfissionalModel> profissionalModelOptional = profissionalRepository.findById(profissionalId);
-        if(profissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Profissional not found.");
+
+        if (profissionalModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Profissional não encontrado.");
         }
+
         return profissionalModelOptional;
     }
 
@@ -61,20 +77,35 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     }
 
     @Override
-    public ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, ProfissionalModel profissionalModel) {
-        CustomBeanUtils.copyProperties(profissionalRecordDto, profissionalModel);
-       profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-       return  profissionalRepository.save(profissionalModel);
+    public ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, UUID profissionalId) {
+
+        if (!emailValidator.isValid(profissionalRecordDto.email())) {
+            throw new NoValidException("Erro: Email inválido.");
+        }
+
+        Optional<ProfissionalModel> profissionalOptional = profissionalRepository.findById(profissionalId);
+        if (profissionalOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Profissional não existe.");
+        }
+        ProfissionalModel profissional = profissionalOptional.get();
+
+        if (!profissional.getCrm().equals(profissionalRecordDto.crm()) && profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
+            throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
+        }
+
+        CustomBeanUtils.copyProperties(profissionalRecordDto, profissional);
+        profissional.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+       return  profissionalRepository.save(profissional);
     }
 
     @Override
-    public void delete(ProfissionalModel profissionalModel) {
+    public void delete(UUID profissionalId) {
 
-        Optional<TriagemModel> triagemModelOptional = triagemRepository.findProficionalIntoTriagem(profissionalModel.getProfissionalId());
+        Optional<TriagemModel> triagemModelOptional = triagemRepository.findProficionalIntoTriagem(profissionalId);
         if (!triagemModelOptional.isEmpty()) {
             throw new NotFoundException("Erro: Existe Triagem para esse Profissional, não será permitido o Delete. ");
         }
-        profissionalRepository.delete(profissionalModel);
+        profissionalRepository.deleteById(profissionalId);
     }
 
 }

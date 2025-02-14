@@ -29,12 +29,7 @@ public class ResultClinicoValidator implements Validator {
     public void validate(Object o, Errors errors) {
         ResultClinicoRecordDto resultClinicoRecordDto = (ResultClinicoRecordDto) o;
         validator.validate(resultClinicoRecordDto, errors);
-//        if(!errors.hasErrors()){
-//            validatePacientecpf(pacienteRecordDto, errors);
-//
-//        }
+
     }
-
-
 
 }

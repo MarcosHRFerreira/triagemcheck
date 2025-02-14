@@ -57,21 +57,12 @@ public class FeedbackProfissionalController {
 
         logger.debug("POST saveFeedbackProfissional feedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 
-        feedbackProfissionalValidator.validate(feedbackProfissionalRecordDto,errors);
-
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
-
-        if (profissionalOptional.isPresent() && triagemOptional.isPresent()) {
-            ProfissionalModel profissional = profissionalOptional.get();
-            TriagemModel triagem = triagemOptional.get();
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(feedbackProfissionalService.save(feedbackProfissionalRecordDto, profissional, triagem));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Profissional ou triagem não encontrados.");
-        }
-
+                    .body(feedbackProfissionalService.save(feedbackProfissionalRecordDto, profissionalId, triagemId));
     }
+
+
+
     @Operation(summary = "Obter todos os feedbacks dos profissionais")
     @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
     @GetMapping
@@ -80,16 +71,16 @@ public class FeedbackProfissionalController {
         Page<FeedbackProfissionalModel>  feedbackProfissionalModelPage = feedbackProfissionalService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalModelPage);
     }
+
     @Operation(summary = "Obter um feedback do profissional pelo ID")
     @ApiResponse(responseCode = "200", description = "Feedback obtido com sucesso")
     @GetMapping("/{feedbackprofissionalId}")
     public ResponseEntity<Object> getOne(@Parameter(description = "ID do feedback do profissional") @PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
-        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findById(feedbackprofissionalId);
-        if (feedbackOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(feedbackOptional.get());
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
-        }
+
+        logger.debug("GET getOne feedbackprofissionalId received {} ", feedbackprofissionalId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(feedbackProfissionalService.findById(feedbackprofissionalId));
+
     }
     @Operation(summary = "Atualizar feedback do profissional")
     @ApiResponses(value = {
@@ -104,14 +95,9 @@ public class FeedbackProfissionalController {
 
         logger.debug("PUT updateFeedBackProfissional FeedbackProfissionalRecordDto received {} ", feedbackProfissionalRecordDto);
 
-        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findProfissionalTriagemInFeedback(profissionalId, triagemId, feedbackprofissionalId);
-        if (feedbackOptional.isPresent()) {
-            FeedbackProfissionalModel feedbackProfissional = feedbackOptional.get();
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, feedbackProfissional));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+                    .body(feedbackProfissionalService.update(feedbackProfissionalRecordDto, triagemId, profissionalId, feedbackprofissionalId));
+
     }
 
     @Operation(summary = "Deletar feedback do profissional")
@@ -122,14 +108,10 @@ public class FeedbackProfissionalController {
     @Transactional
     @DeleteMapping("/{feedbackprofissionalId}")
     public ResponseEntity<Object> delete(@PathVariable(value = "feedbackprofissionalId") UUID feedbackprofissionalId){
+
         logger.debug("DELETE delete FeedbackProfissionais feedbackprofissionalId received {} ", feedbackprofissionalId);
-        Optional<FeedbackProfissionalModel> feedbackOptional = feedbackProfissionalService.findById(feedbackprofissionalId);
-        if (feedbackOptional.isPresent()) {
-            feedbackProfissionalService.delete(feedbackOptional.get());
-            return ResponseEntity.status(HttpStatus.OK).body("Feedback do Profissional deletado com sucesso.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Feedback não encontrado.");
-        }
+        feedbackProfissionalService.delete(feedbackprofissionalId);
+        return ResponseEntity.status(HttpStatus.OK).body("Feedback deletado com sucesso.");
     }
 
 }
