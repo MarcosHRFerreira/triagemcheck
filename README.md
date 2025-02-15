@@ -1,4 +1,4 @@
-## <span style="color: lightblue;">Sistema de Avaliação da Qualidade de Triagem de Pacientes</span>
+## <span style="color: lightblue;">MVP - Sistema de Avaliação da Qualidade de Triagem de Pacientes</span>
 
 
 ## <span style="color: lightblue;">Descrição</span>
@@ -104,6 +104,101 @@ Este sistema foi desenvolvido para avaliar a qualidade da triagem de pacientes e
 ## <span style="color: lightgreen;">Sobre a Aplicação</span>
 
 A aplicação foi arquitetada com base nos princípios do padrão MVC (Model-View-Controller). Ela foi desenvolvida para ser consumida como uma API Rest, facilitando a integração com outras aplicações e serviços. Esta abordagem modular permite uma separação clara das responsabilidades, promovendo uma manutenção mais eficiente e um desenvolvimento mais escalável.
+
+
+## <span style="color: lightgreen;">Consultas Possiveis Disponíveis</span>
+
+#### Triagens por Data de Criação
+**Objetivo:** Obter todas as triagens criadas em um intervalo de datas específico.
+
+#### Triagens por Severidade
+**Objetivo:** Obter todas as triagens com uma severidade específica.
+
+#### Triagens por Especialidade do Profissional
+**Objetivo:** Obter todas as triagens realizadas por profissionais de uma especialidade específica.
+
+#### Feedbacks de Pacientes
+**Objetivo:** Obter todos os feedbacks fornecidos pelos pacientes.
+
+#### Feedbacks dos Profissionais
+**Objetivo:** Obter todos os feedbacks fornecidos pelos profissionais.
+
+#### Relatório Completo de Triagens
+**Objetivo:** Obter um relatório completo das triagens, incluindo informações dos pacientes, profissionais, diagnósticos e feedbacks.
+
+#### Contagem de Triagens por Severidade
+**Objetivo:** Obter a contagem de triagens agrupadas por severidade.
+
+#### Triagens por CPF do Paciente
+**Objetivo:** Obter todas as triagens relacionadas a um paciente específico com base no CPF.
+
+#### Triagens por Nome do Profissional
+**Objetivo:** Obter todas as triagens realizadas por um profissional específico.
+
+#### Triagens por Nome do Paciente
+**Objetivo:** Obter todas as triagens relacionadas a um paciente específico com base no nome.
+
+#### Triagens por Cor do Protocolo
+**Objetivo:** Obter todas as triagens com uma cor de protocolo específica.
+
+#### Triagens por Data de Alteração
+**Objetivo:** Obter todas as triagens alteradas em um intervalo de datas específico.
+
+#### Diagnósticos por Data
+**Objetivo:** Obter todos os diagnósticos registrados em um intervalo de datas específico.
+
+#### Pacientes por Bairro
+**Objetivo:** Obter todos os pacientes que residem em um bairro específico.
+
+#### Profissionais por Status Operacional
+**Objetivo:** Obter todos os profissionais com um status operacional específico.
+
+#### Feedbacks de Pacientes por Avaliação
+**Objetivo:** Obter todos os feedbacks fornecidos pelos pacientes com uma avaliação específica.
+
+#### Feedbacks de Profissionais por Avaliação de Eficácia
+**Objetivo:** Obter todos os feedbacks fornecidos pelos profissionais com uma avaliação de eficácia específica.
+
+#### Triagens por Sintomas
+**Objetivo:** Obter todas as triagens que contêm um sintoma específico.
+
+#### Pacientes por Cidade
+**Objetivo:** Obter todos os pacientes que residem em uma cidade específica.
+
+#### Diagnósticos por Desfecho
+**Objetivo:** Obter todos os diagnósticos com um desfecho específico.
+
+---
+
+#### Triagens por Nome do Enfermagem
+**Objetivo:** Obter todas as triagens realizadas por um enfermeiro(a) específico(a).
+
+#### Feedbacks de Pacientes por Data de Criação
+**Objetivo:** Obter todos os feedbacks fornecidos pelos pacientes em um intervalo de datas específico.
+
+#### Feedbacks dos Profissionais por Data de Criação
+**Objetivo:** Obter todos os feedbacks fornecidos pelos profissionais em um intervalo de datas específico.
+
+#### Profissionais por Especialidade
+**Objetivo:** Obter todos os profissionais de uma especialidade específica.
+
+#### Pacientes por Data de Nascimento
+**Objetivo:** Obter todos os pacientes nascidos em um intervalo de datas específico.
+
+#### Diagnósticos por Paciente
+**Objetivo:** Obter todos os diagnósticos relacionados a um paciente específico.
+
+#### Triagens por CRM do Profissional
+**Objetivo:** Obter todas as triagens realizadas por um profissional específico com base no CRM.
+
+#### Feedbacks de Pacientes por Nome
+**Objetivo:** Obter todos os feedbacks fornecidos pelos pacientes com base no nome.
+
+#### Feedbacks dos Profissionais por Nome
+**Objetivo:** Obter todos os feedbacks fornecidos pelos profissionais com base no nome.
+
+#### Triagens por Avaliação de Feedback do Paciente
+**Objetivo:** Obter todas as triagens que possuem uma avaliação específica no feedback do paciente.
 
 
 ## <span style="color: lightgreen;">Desenvolvedores</span>
