@@ -35,8 +35,6 @@ public class TriagemServiceImpl implements TriagemService {
     final ProfissionalService profissionalService;
     final PacienteService pacienteService;
 
-
-
     public TriagemServiceImpl(TriagemRepository triagemRepository,
                               ProfissionalRepository profissionalRepository, ProfissionalService profissionalService, PacienteService pacienteService) {
         this.triagemRepository = triagemRepository;
@@ -85,7 +83,7 @@ public class TriagemServiceImpl implements TriagemService {
     public Optional<TriagemModel> findById(UUID triagemId){
         Optional<TriagemModel> triagemModelOptional = triagemRepository.findById(triagemId);
         if(triagemModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Triagem not found.");
+            throw new NotFoundException("Erro: Triagem não existe.");
         }
         return triagemModelOptional;
     }
@@ -98,7 +96,7 @@ public class TriagemServiceImpl implements TriagemService {
         Optional<TriagemModel> triagemModelOptional=
         triagemRepository.findPacienteProfissionalInTriagem(pacienteId,profissionalId,triagemId );
         if(triagemModelOptional.isEmpty()){
-            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId   not found for this TB_TRIAGENS.");
+            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId  não existem na TB_TRIAGENS.");
         }
         return triagemModelOptional;
     }
@@ -119,15 +117,18 @@ public class TriagemServiceImpl implements TriagemService {
 
         Optional<TriagemModel> triagemOptional = findPacienteProfissionalInTriagem(pacienteId, profissionalId, triagemId);
         if (triagemOptional.isEmpty()) {
-            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId   not found for this TB_TRIAGENS.");
+            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId não existem na TB_TRIAGENS.");
         }
 
        TriagemModel triagem = triagemOptional.get();
 
-        Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
-        if (!existingRecord.isPresent()) {
-            throw new NoValidException("Erro: Registro de enfermagem não existe.");
+        if(triagemRecordDto.enfermagemId() !=null) {
+            Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
+            if (!existingRecord.isPresent()) {
+                throw new NoValidException("Erro: Registro de enfermagem não existe.");
+            }
         }
+
         if(profissional.getCrm().isEmpty()){
             throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
         }

@@ -3,8 +3,6 @@ package br.com.TriagemCheck.services;
 
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.models.PacienteModel;
-import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

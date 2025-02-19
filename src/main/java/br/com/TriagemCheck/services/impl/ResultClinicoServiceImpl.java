@@ -67,7 +67,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     public Optional<ResultClinicosModel> findById(UUID resultadoId){
         Optional<ResultClinicosModel> resultClinicosModelOptional = resultClinicoRepository.findById(resultadoId);
         if(resultClinicosModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Resultdo Clinico not found.");
+            throw new NotFoundException("Erro: Resultdo Clinico não encontrado.");
         }
         return resultClinicosModelOptional;
     }
@@ -77,7 +77,7 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
        Optional<ResultClinicosModel> resultClinicosModelOptional=
                resultClinicoRepository.findProfissionalTriagemInResultClinico(profissionalId, triagemId, resultadoId) ;
         if(resultClinicosModelOptional.isEmpty()){
-            throw new NotFoundException("Error: resultadoId, profissionalId ou triagemId  not found for this TB_RESULTCLINICOS.");
+            throw new NotFoundException("Error: resultadoId, profissionalId ou triagemId  não existem na TB_RESULTCLINICOS.");
         }
         return resultClinicosModelOptional;
     }

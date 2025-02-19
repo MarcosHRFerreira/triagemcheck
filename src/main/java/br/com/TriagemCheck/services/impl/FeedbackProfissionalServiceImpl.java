@@ -59,7 +59,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
         Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
                 feedbackProfissionalRepository.findProfissionalTriagem(profissional.getProfissionalId(),triagem.getTriagemId() );
         if(!feedbackProfissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Error: profissional, triagemId  found for this TB_FEEDBACKPROFISSIONAL.");
+            throw new NotFoundException("Error: profissional, triagemId  já existem na TB_FEEDBACKPROFISSIONAL.");
         }
 
         var feedbackprofissionalModel = new FeedbackProfissionalModel();
@@ -86,7 +86,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     public Optional<FeedbackProfissionalModel> findById(UUID feedbackprofissionalId) {
         Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = feedbackProfissionalRepository.findById(feedbackprofissionalId);
         if(feedbackProfissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Error: FeedbackProfissional not found.");
+            throw new NotFoundException("Error: FeedbackProfissional não encontrado.");
         }
         return feedbackProfissionalModelOptional;
     }
@@ -96,7 +96,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
         Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
                 feedbackProfissionalRepository.findProssionalTriagemInFeedback(profissionalId,triagemId,feedbackprofissionalId );
         if(feedbackProfissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Error: profissionalId, triagemId  not found for this TB_FEEDBACKPROFISSIONAL.");
+            throw new NotFoundException("Error: profissionalId, triagemId não existem na TB_FEEDBACKPROFISSIONAL.");
         }
         return feedbackProfissionalModelOptional;
     }

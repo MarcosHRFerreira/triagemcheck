@@ -41,6 +41,9 @@ public class ProfissionalServiceImpl implements ProfissionalService {
         if (!emailValidator.isValid(profissionalRecordDto.email())) {
             throw new NoValidException("Erro: Email inválido.");
         }
+        if(existsByEmail(profissionalRecordDto.email())){
+            throw new NoValidException("Erro: Email já existe.");
+        }
 
         if (profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
             throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
@@ -52,6 +55,10 @@ public class ProfissionalServiceImpl implements ProfissionalService {
         profissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
         return profissionalRepository.save(profissionalModel);
+    }
+
+    private boolean existsByEmail(String email) {
+        return profissionalRepository.existsByemail(email);
     }
 
     @Override
@@ -79,23 +86,29 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     @Override
     public ProfissionalModel update(ProfissionalRecordDto profissionalRecordDto, UUID profissionalId) {
 
-        if (!emailValidator.isValid(profissionalRecordDto.email())) {
-            throw new NoValidException("Erro: Email inválido.");
-        }
 
         Optional<ProfissionalModel> profissionalOptional = profissionalRepository.findById(profissionalId);
+
         if (profissionalOptional.isEmpty()) {
             throw new NotFoundException("Erro: Profissional não existe.");
-        }
-        ProfissionalModel profissional = profissionalOptional.get();
+        } else {
+            ProfissionalModel profissional = profissionalOptional.get();
 
-        if (!profissional.getCrm().equals(profissionalRecordDto.crm()) && profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
-            throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
-        }
+            if (!profissional.getCrm().equals(profissionalRecordDto.crm()) && profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
+                throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
+            }
+            if (!emailValidator.isValid(profissionalRecordDto.email())) {
+                throw new NoValidException("Erro: Email inválido.");
+            }
 
-        CustomBeanUtils.copyProperties(profissionalRecordDto, profissional);
-        profissional.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-       return  profissionalRepository.save(profissional);
+            if(!profissional.getEmail().equals(profissionalRecordDto.email()) && existsByEmail(profissionalRecordDto.email()) ){
+                throw new NoValidException("Erro: Email já existe.");
+            }
+
+            CustomBeanUtils.copyProperties(profissionalRecordDto, profissional);
+            profissional.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+            return profissionalRepository.save(profissional);
+        }
     }
 
     @Override

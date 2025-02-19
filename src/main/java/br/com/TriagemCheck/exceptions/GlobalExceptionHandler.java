@@ -13,8 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.naming.NoPermissionException;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +42,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorRecordResponse);
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorRecordResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -62,13 +61,13 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         if (ex.getCause() instanceof InvalidFormatException) {
             InvalidFormatException ifx = (InvalidFormatException) ex.getCause();
-            if (ifx.getTargetType()!=null && ifx.getTargetType().isEnum()) {
-                String fieldName = ifx.getPath().get(ifx.getPath().size()-1).getFieldName();
-                String errorMessage = ex.getMessage();
+            if (ifx.getTargetType() != null && ifx.getTargetType().equals(LocalDate.class)) {
+                String fieldName = ifx.getPath().get(ifx.getPath().size() - 1).getFieldName();
+                String errorMessage = "Erro de formatação: A data fornecida é inválida. Por favor, use o formato yyyy-MM-dd.";
                 errors.put(fieldName, errorMessage);
             }
         }
-        var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(), "Error: Invalid enum value", errors);
+        var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(), "Erro: Formatação de data inválida", errors);
         logger.error("HttpMessageNotReadableException message: {} ", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
     }
@@ -100,35 +99,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorRecordResponse);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
-//        var errorRecordResponse = new ErrorRecordResponse(
-//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//                "Erro: " + ex.getMessage(),
-//                null
-//        );
-//        logger.error("Exception message: {} ", ex.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
-//    }
-
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErrorRecordResponse> handleAllExceptions(Exception ex) {
-//        String errorMessage = ex.getMessage();
-//        if (errorMessage.contains("violates")) {
-//            int endIndex = errorMessage.indexOf("violates") + "violates".length();
-//            errorMessage = errorMessage.substring(0, endIndex) + "...";
-//        } else {
-//            errorMessage = errorMessage.substring(0, Math.min(errorMessage.length(), 100)) + "..."; // Trunca a mensagem para 100 caracteres
-//        }
-//        var errorRecordResponse = new ErrorRecordResponse(
-//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//                errorMessage,
-//                null
-//        );
-//        logger.error("Exception message: {} ", ex.getMessage());
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
-//    }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorRecordResponse> handleGeneralException(Exception ex) {
         var errorRecordResponse = new ErrorRecordResponse(
@@ -139,7 +109,4 @@ public class GlobalExceptionHandler {
         logger.error("Exception message: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
     }
-
-
-
 }

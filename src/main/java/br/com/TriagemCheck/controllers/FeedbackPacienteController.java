@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +36,7 @@ public class FeedbackPacienteController {
     final TriagemService triagemService;
     final PacienteService pacienteService;
 
-    public FeedbackPacienteController(FeedbackPacienteService feedbackPacienteService, Validator validator, FeedbackPacienteValidator feedbackPacienteValidator, TriagemService triagemService, PacienteService pacienteService) {
+    public FeedbackPacienteController(FeedbackPacienteService feedbackPacienteService, FeedbackPacienteValidator feedbackPacienteValidator, TriagemService triagemService, PacienteService pacienteService) {
         this.feedbackPacienteService = feedbackPacienteService;
         this.feedbackPacienteValidator = feedbackPacienteValidator;
         this.triagemService = triagemService;

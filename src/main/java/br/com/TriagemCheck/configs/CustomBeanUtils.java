@@ -10,6 +10,7 @@ public class CustomBeanUtils {
 
     public static String[] getNullPropertyNames(Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
+
         return Arrays.stream(src.getPropertyDescriptors())
                 .map(FeatureDescriptor::getName)
                 .filter(propertyName -> src.getPropertyValue(propertyName) == null)

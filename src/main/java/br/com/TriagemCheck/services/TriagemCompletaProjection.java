@@ -5,11 +5,13 @@ import java.util.UUID;
 
 public interface TriagemCompletaProjection {
     UUID gettriagemId();
+    UUID getpacienteId();
     String getnomePaciente();
     String getcpfPaciente();
     String getcorProtocolo();
     String getseveridade();
     String getsintomas();
+    UUID getprofissionalId();
     String getcrmprofissional();
     String getnomeProfissional();
     String getespecialidadeProfissional();

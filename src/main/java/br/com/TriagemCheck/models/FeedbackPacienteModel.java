@@ -32,12 +32,12 @@ public class FeedbackPacienteModel  implements Serializable {
     private LocalDateTime  dataAlteracao;
 
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private PacienteModel paciente;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private TriagemModel triagem;
 
 

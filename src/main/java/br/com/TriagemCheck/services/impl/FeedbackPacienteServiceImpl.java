@@ -55,7 +55,7 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
         Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
                 feedbackPacienteRepository.findPacienteTriagem(paciente.getPacienteId(), triagem.getTriagemId() );
         if(!feedbackPacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Error: pacienteId, triagemId  found for this TB_FEEDBACKPACIENTES.");
+            throw new NotFoundException("Error: pacienteId, triagemId  já existem na TB_FEEDBACKPACIENTES.");
         }
         if(feedbackPacienteRecordDto.avaliacao()<=0 || feedbackPacienteRecordDto.avaliacao()>6 ){
             throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
@@ -83,7 +83,7 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     public Optional<FeedbackPacienteModel> findById(UUID feedbackpacienteId) {
         Optional<FeedbackPacienteModel> feedbackPacienteModelOptional = feedbackPacienteRepository.findById(feedbackpacienteId);
         if(feedbackPacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Error: FeedbackPaciente not found.");
+            throw new NotFoundException("Error: FeedbackPaciente não encontrado.");
         }
         return feedbackPacienteModelOptional;
     }
@@ -93,7 +93,7 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
        Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
                feedbackPacienteRepository.findPacienteTriagemInFeedback(pacienteId,triagemId,feedbackpacienteId );
        if(feedbackPacienteModelOptional.isEmpty()){
-           throw new NotFoundException("Error: pacienteId,triagemId  not found for this TB_FEEDBACKPACIENTES.");
+           throw new NotFoundException("Error: pacienteId,triagemId  não existem na TB_FEEDBACKPACIENTES.");
        }
        return feedbackPacienteModelOptional;
     }

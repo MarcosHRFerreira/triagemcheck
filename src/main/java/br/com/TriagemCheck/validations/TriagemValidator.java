@@ -1,7 +1,6 @@
 package br.com.TriagemCheck.validations;
 
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.repositories.TriagemRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,9 +29,6 @@ public class TriagemValidator implements Validator {
         TriagemRecordDto triagemRecordDto = (TriagemRecordDto) target;
         validator.validate(triagemRecordDto, errors);
 
-//        if (!errors.hasErrors()) {
-//
-//        }
     }
 
 

@@ -2,8 +2,6 @@ package br.com.TriagemCheck.controllers;
 
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.models.PacienteModel;
-import br.com.TriagemCheck.models.ProfissionalModel;
 import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.ProfissionalService;
@@ -27,7 +25,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Validated

@@ -3,8 +3,6 @@ package br.com.TriagemCheck.dtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.UUID;
-
 public record ResultClinicoRecordDto(
         @Schema(description = "Diagnostico do exame", example = "Peneumonia")
         @NotBlank(message = "Diagnostico Obrigatório")

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -24,9 +25,9 @@ public class PacienteServiceImpl implements PacienteService {
 
     final PacienteRepository pacienteRepository;
 
+
     public PacienteServiceImpl(PacienteRepository pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
-
     }
     EmailValidator emailValidator = EmailValidator.getInstance();
 
@@ -39,6 +40,12 @@ public class PacienteServiceImpl implements PacienteService {
         if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
             throw new NoValidException("Erro: Email inválido.");
         }
+        if(existsBycpf(pacienteRecordDto.cpf())){
+            throw new NoValidException("Erro: CPF já existe.");
+        }
+        if(existsByEmail(pacienteRecordDto.email())){
+            throw new NoValidException("Erro: Email já existe.");
+        }
 
         var pacienteModel=new PacienteModel();
         CustomBeanUtils.copyProperties(pacienteRecordDto,pacienteModel);
@@ -49,11 +56,13 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteRepository.save(pacienteModel);
     }
 
+    private boolean existsByEmail(String email) {
+        return pacienteRepository.existsByemail(email);
+    }
     @Override
     public boolean existsBycpf(String cpf) {
         return pacienteRepository.existsBycpf(cpf);
     }
-
     @Override
     public Page<PacienteModel> findAll(Pageable pageable) {
         return pacienteRepository.findAll(pageable);
@@ -62,7 +71,7 @@ public class PacienteServiceImpl implements PacienteService {
     public Optional<PacienteModel> findByCpf(String cpf){
         Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findByCpf(cpf);
         if(pacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Paciente not found.");
+            throw new NotFoundException("Erro: Paciente não encontrado.");
         }
         return pacienteModelOptional;
     }
@@ -72,20 +81,29 @@ public class PacienteServiceImpl implements PacienteService {
         if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
             throw new NoValidException("Erro: Email inválido.");
         }
-        if(!ValidaCPF.isCPF(pacienteRecordDto.cpf())){
+        if (!ValidaCPF.isCPF(pacienteRecordDto.cpf())) {
             throw new NoValidException("Erro: CPF inválido.");
         }
-        Optional<PacienteModel> pacienteModelOptional = findById(pacienteId) ;
+
+        Optional<PacienteModel> pacienteModelOptional = findById(pacienteId);
 
         if (pacienteModelOptional.isEmpty()) {
             throw new NotFoundException("Erro: Paciente não encontrado.");
+        } else {
+            var pacienteModel = pacienteModelOptional.get();
+
+            if(!pacienteModel.getCpf().equals(pacienteRecordDto.cpf()) && existsBycpf(pacienteRecordDto.cpf()) ){
+                throw new NoValidException("Erro: CPF já existe.");
+            }
+            if(!pacienteModel.getEmail().equals(pacienteRecordDto.email()) && existsByEmail(pacienteRecordDto.email()) ){
+                throw new NoValidException("Erro: Email já existe.");
+            }
+
+            CustomBeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
+            pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+            return pacienteRepository.save(pacienteModel);
         }
 
-        var pacienteModel = new PacienteModel();
-
-        CustomBeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
-        pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-        return pacienteRepository.save(pacienteModel);
     }
     @Transactional
     @Override
@@ -104,9 +122,10 @@ public class PacienteServiceImpl implements PacienteService {
     public Optional<PacienteModel> findById(UUID pacienteId) {
         Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
         if(pacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Erro: Paciente not found.");
+            throw new NotFoundException("Erro: Paciente não encontrado.");
         }
         return pacienteModelOptional;
     }
+
 
 }

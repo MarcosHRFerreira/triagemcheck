@@ -9,10 +9,12 @@ public class TriagemConverter {
         return new TriagemCompletaRecordDto(
                 projection.gettriagemId(),
                 projection.getnomePaciente(),
+                projection.getpacienteId(),
                 projection.getcpfPaciente(),
                 projection.getcorProtocolo(),
                 projection.getseveridade(),
                 projection.getsintomas(),
+                projection.getprofissionalId(),
                 projection.getcrmprofissional(),
                 projection.getnomeProfissional(),
                 projection.getespecialidadeProfissional(),

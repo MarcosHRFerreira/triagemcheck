@@ -6,10 +6,12 @@ import java.util.UUID;
 public record TriagemCompletaRecordDto(
         UUID triagemId,
         String nomePaciente,
+        UUID pacienteId,
         String cpfPaciente,
         String corProtocolo,
         String severidade,
         String sintomas,
+        UUID profissionalId,
         String crm,
         String nomeProfissional,
         String especialidadeProfissional,

@@ -9,4 +9,5 @@ public interface ProfissionalRepository extends JpaRepository<ProfissionalModel,
 
      boolean existsBycrm(String crm) ;
 
+    boolean existsByemail(String email);
 }
