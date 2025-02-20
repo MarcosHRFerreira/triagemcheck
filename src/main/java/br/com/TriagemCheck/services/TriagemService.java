@@ -20,7 +20,7 @@ public interface TriagemService {
 
     Optional<TriagemModel> findPacienteProfissionalInTriagem(UUID pacienteId, UUID profissionalId, UUID triagemId);
 
-    TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId, UUID profissioanlId, UUID pacienteId );
+    TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId  );
 
     Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable, String cpf);
 }

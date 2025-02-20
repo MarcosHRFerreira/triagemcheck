@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface FeedbackProfissionalService {
 
-    FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID  profissionalId, UUID triagemId);
+    FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto,  UUID triagemId);
 
     Page<FeedbackProfissionalModel> findAll(Pageable pageable);
 
@@ -20,7 +20,7 @@ public interface FeedbackProfissionalService {
 
     Optional<FeedbackProfissionalModel> findProfissionalTriagemInFeedback(UUID profissionalId, UUID triagemId, UUID feedbackprofissionalId);
 
-    FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID triagemId, UUID profissionalId, UUID feedbackprofissionalId );
+    FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto,  UUID feedbackprofissionalId );
 
     void delete(UUID feedbackprofissionalId);
 }

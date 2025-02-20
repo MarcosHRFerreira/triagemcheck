@@ -11,7 +11,6 @@ import br.com.TriagemCheck.repositories.FeedbackPacienteRepository;
 import br.com.TriagemCheck.services.FeedbackPacienteService;
 import br.com.TriagemCheck.services.PacienteService;
 import br.com.TriagemCheck.services.TriagemService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,41 +36,43 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     }
 
     @Override
-    public FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID pacienteId, UUID triagemId ) {
+    public FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID triagemId ) {
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
         Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
 
-        if (pacienteOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
-        }
         if (triagemOptional.isEmpty()) {
             throw new NotFoundException("Erro: Triagem não encontrada.");
+        }else {
+
+            Optional<PacienteModel> pacienteOptional = pacienteService.findById(triagemOptional.get().getPaciente().getPacienteId());
+            if (pacienteOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Paciente não encontrado.");
+            }
+            PacienteModel paciente = pacienteOptional.get();
+
+            TriagemModel triagem = triagemOptional.get();
+
+            Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
+                    feedbackPacienteRepository.findPacienteTriagem(paciente.getPacienteId(), triagem.getTriagemId() );
+            if(!feedbackPacienteModelOptional.isEmpty()){
+                throw new NotFoundException("Error: pacienteId, triagemId  já existem na TB_FEEDBACKPACIENTES.");
+            }
+            if(feedbackPacienteRecordDto.avaliacao()<=0 || feedbackPacienteRecordDto.avaliacao()>6 ){
+                throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
+            }
+
+            var feedbackPacienteModel = new FeedbackPacienteModel();
+
+            CustomBeanUtils.copyProperties(feedbackPacienteRecordDto,feedbackPacienteModel);
+
+            feedbackPacienteModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
+            feedbackPacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            feedbackPacienteModel.setPaciente(paciente);
+            feedbackPacienteModel.setTriagem(triagem);
+
+            return feedbackPacienteRepository.save(feedbackPacienteModel);
         }
-
-        PacienteModel paciente = pacienteOptional.get();
-        TriagemModel triagem = triagemOptional.get();
-
-        Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
-                feedbackPacienteRepository.findPacienteTriagem(paciente.getPacienteId(), triagem.getTriagemId() );
-        if(!feedbackPacienteModelOptional.isEmpty()){
-            throw new NotFoundException("Error: pacienteId, triagemId  já existem na TB_FEEDBACKPACIENTES.");
-        }
-        if(feedbackPacienteRecordDto.avaliacao()<=0 || feedbackPacienteRecordDto.avaliacao()>6 ){
-            throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
-        }
-
-        var feedbackPacienteModel = new FeedbackPacienteModel();
-
-        BeanUtils.copyProperties(feedbackPacienteRecordDto,feedbackPacienteModel);
-        feedbackPacienteModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        feedbackPacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-
-        feedbackPacienteModel.setPaciente(paciente);
-        feedbackPacienteModel.setTriagem(triagem);
-
-        return feedbackPacienteRepository.save(feedbackPacienteModel);
-
     }
 
     @Override
@@ -99,33 +100,33 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     }
 
     @Override
-    public FeedbackPacienteModel update(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto) {
+    public FeedbackPacienteModel update(UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto) {
 
-        Optional<FeedbackPacienteModel> feedbackOptional = findPacienteTriagemInFeedback(pacienteId, triagemId, feedbackpacienteId);
-
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        Optional<FeedbackPacienteModel> feedbackOptional = findById(feedbackpacienteId);
 
         if (feedbackOptional.isEmpty()) {
             throw new NotFoundException("Erro: Feedback não encontrado.");
-        }
-        if (pacienteOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
-        }
-        if (triagemOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Triagem não encontrada.");
-        }
+        }else {
+            Optional<PacienteModel> pacienteOptional = pacienteService.findById(feedbackOptional.get().getPaciente().getPacienteId());
+            if (pacienteOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Paciente não encontrado.");
+            }
+            Optional<TriagemModel> triagemOptional = triagemService.findById(feedbackOptional.get().getTriagem().getTriagemId());
+            if (triagemOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Triagem não encontrada.");
+            }
 
-        FeedbackPacienteModel feedback = feedbackOptional.get();
+            FeedbackPacienteModel feedback = feedbackOptional.get();
 
-        if(feedbackPacienteRecordDto.avaliacao()<=0 || feedbackPacienteRecordDto.avaliacao()>6 ){
-            throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
+            if (feedbackPacienteRecordDto.avaliacao() <= 0 || feedbackPacienteRecordDto.avaliacao() > 6) {
+                throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
+            }
+
+            CustomBeanUtils.copyProperties(feedbackPacienteRecordDto, feedback);
+            feedback.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            return feedbackPacienteRepository.save(feedback);
         }
-
-        CustomBeanUtils.copyProperties(feedbackPacienteRecordDto, feedback);
-        feedback.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-
-        return  feedbackPacienteRepository.save(feedback);
     }
 
     @Transactional

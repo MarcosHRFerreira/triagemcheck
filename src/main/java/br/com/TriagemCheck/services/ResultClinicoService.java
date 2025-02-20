@@ -10,7 +10,7 @@ import java.util.UUID;
 
 
 public interface ResultClinicoService {
-    ResultClinicosModel save(ResultClinicoRecordDto resultClinicoRecordDto, UUID triagemId, UUID profissionalId);
+    ResultClinicosModel save(ResultClinicoRecordDto resultClinicoRecordDto, UUID triagemId);
 
     Page<ResultClinicosModel> findAll(Pageable pageable);
 
@@ -18,5 +18,5 @@ public interface ResultClinicoService {
 
     Optional<ResultClinicosModel> findProfissionalTriagemInResultClinico(UUID profissionalId, UUID triagemId, UUID resultadoId);
 
-    ResultClinicosModel update(ResultClinicoRecordDto resultClinicoRecordDto, UUID profissionalId, UUID triagemId , UUID resultadoId);
+    ResultClinicosModel update(ResultClinicoRecordDto resultClinicoRecordDto,  UUID resultadoId);
 }

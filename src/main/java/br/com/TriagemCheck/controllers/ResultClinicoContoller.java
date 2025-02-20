@@ -48,9 +48,8 @@ public class ResultClinicoContoller {
             @ApiResponse(responseCode = "201", description = "Criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação")
     })
-    @PostMapping("/triagens/{triagemId}/profissionais/{profissionalId}/resultclinico")
+    @PostMapping("/{triagemId}")
     public ResponseEntity<Object> salvarResultClinico(@Parameter(description = "ID da triagem") @PathVariable(value = "triagemId") UUID triagemId,
-                                                      @Parameter(description = "ID do profissional") @PathVariable(value = "profissionalId") UUID profissionalId,
                                                       @RequestBody @Valid ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
 
         logger.debug("POST saveResultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
@@ -58,7 +57,7 @@ public class ResultClinicoContoller {
         resultClinicoValidator.validate(resultClinicoRecordDto, errors);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(resultClinicoService.save(resultClinicoRecordDto, triagemId, profissionalId));
+                    .body(resultClinicoService.save(resultClinicoRecordDto, triagemId));
 
     }
 
@@ -86,16 +85,14 @@ public class ResultClinicoContoller {
 
     @Operation(summary = "Atualizar ResultClinico", description = "Atualiza um resultado clínico existente.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Atualização bem-sucedida")})
-    @PutMapping("/{resultadoId}/profissionais/{profissionalId}/triagens/{triagemId}/resultado")
-    public ResponseEntity<Object> update(@Parameter(description = "ID do profissional")   @PathVariable(value ="profissionalId") UUID profissionalId,
-                                         @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
-                                         @Parameter(description = "ID do resultado") @PathVariable(value="resultadoId") UUID resultadoId,
+    @PutMapping("/{resultadoId}")
+    public ResponseEntity<Object> update(@Parameter(description = "ID do resultado") @PathVariable(value="resultadoId") UUID resultadoId,
                                          @RequestBody ResultClinicoRecordDto resultClinicoRecordDto) {
 
         logger.debug("PUT resultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(resultClinicoService.update(resultClinicoRecordDto, profissionalId, triagemId , resultadoId));
+                    .body(resultClinicoService.update(resultClinicoRecordDto,  resultadoId));
 
     }
 }

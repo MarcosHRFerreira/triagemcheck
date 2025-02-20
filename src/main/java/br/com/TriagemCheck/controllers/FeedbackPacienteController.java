@@ -48,14 +48,13 @@ public class FeedbackPacienteController {
             @ApiResponse(responseCode = "201", description = "Feedback criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro na validação do feedback")
     })
-    @PostMapping("/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-    public ResponseEntity<Object> save(@Parameter(description = "ID do paciente")@PathVariable(value ="pacienteId") UUID pacienteId,
-                                       @Parameter(description = "ID da triagem")@PathVariable(value="triagemId") UUID triagemId,
+    @PostMapping("/{triagemId}")
+    public ResponseEntity<Object> save(@Parameter(description = "ID da triagem")@PathVariable(value="triagemId") UUID triagemId,
                                        @RequestBody @Valid FeedbackPacienteRecordDto feedbackPacienteRecordDto, Errors errors){
 
         logger.debug("POST salvarFeedbackPaciente feedbackPacienteRecordDto recebido {} ", feedbackPacienteRecordDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto, pacienteId, triagemId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(feedbackPacienteService.save(feedbackPacienteRecordDto,  triagemId));
 
     }
     @Operation(summary = "Obter todos os feedbacks dos pacientes")
@@ -81,16 +80,14 @@ public class FeedbackPacienteController {
             @ApiResponse(responseCode = "404", description = "Feedback não encontrado"),
             @ApiResponse(responseCode = "409", description = "Avaliacao tem que ser entre 1 e 5.")
     })
-    @PutMapping("/{feedbackpacienteId}/pacientes/{pacienteId}/triagens/{triagemId}/feedbackpaciente")
-    public ResponseEntity<Object> update(@Parameter(description = "ID do paciente") @PathVariable(value ="pacienteId") UUID pacienteId,
-                                         @Parameter(description = "ID da triagem") @PathVariable(value="triagemId") UUID triagemId,
-                                         @Parameter(description = "ID do feedback do paciente") @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
+    @PutMapping("/{feedbackpacienteId}")
+    public ResponseEntity<Object> update(@Parameter(description = "ID do feedback do paciente") @PathVariable(value="feedbackpacienteId") UUID feedbackpacienteId,
                                          @RequestBody FeedbackPacienteRecordDto feedbackPacienteRecordDto){
 
         logger.debug("PUT updateFeedBackPaciente FeedbackPacienteRecordDto received {} ", feedbackPacienteRecordDto);
 
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(feedbackPacienteService.update(pacienteId , triagemId, feedbackpacienteId,feedbackPacienteRecordDto));
+                    .body(feedbackPacienteService.update(feedbackpacienteId,feedbackPacienteRecordDto));
 
     }
 

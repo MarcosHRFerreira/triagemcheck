@@ -93,15 +93,13 @@ public class TriagemController {
             @ApiResponse(responseCode = "404", description = "Triagem não encontrada"),
             @ApiResponse(responseCode = "400", description = "Erro de validação", content = @Content)
     })
-    @PutMapping("/{triagemId}/pacientes/{pacienteId}/profissionais/{profissionalId}/triagem")
-    public ResponseEntity<Object> update(@Parameter(description = "ID do paciente", required = true) @PathVariable(value ="pacienteId") UUID pacienteId,
-                                         @Parameter(description = "ID do profissional", required = true) @PathVariable(value="profissionalId") UUID profissionalId,
-                                         @Parameter(description = "ID da triagem", required = true)  @PathVariable(value="triagemId") UUID triagemId,
+    @PutMapping("/{triagemId}")
+    public ResponseEntity<Object> update(@Parameter(description = "ID da triagem", required = true)  @PathVariable(value="triagemId") UUID triagemId,
                                          @Parameter(description = "Dados atualizados da triagem", required = true) @RequestBody TriagemRecordDto triagemRecordDto){
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 
-            return ResponseEntity.status(HttpStatus.OK).body(triagemService.update(triagemRecordDto, triagemId, pacienteId, profissionalId));
+            return ResponseEntity.status(HttpStatus.OK).body(triagemService.update(triagemRecordDto, triagemId));
     }
     @Operation(summary = "Listar Triagens Completas", description = "Retorna uma lista paginada de triagens com informações detalhdas")
     @ApiResponses(value = {

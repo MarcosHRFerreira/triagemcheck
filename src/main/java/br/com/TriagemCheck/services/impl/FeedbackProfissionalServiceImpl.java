@@ -32,47 +32,48 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     }
 
     @Override
-    public FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID profissionalId, UUID triagemId) {
+    public FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID triagemId) {
 
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+
         Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
 
-        if (profissionalOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Profissional não encontrado.");
-        }
         if (triagemOptional.isEmpty()) {
             throw new NotFoundException("Erro: Triagem não encontrada.");
-        }
+        }else {
 
+            Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(triagemOptional.get().getProfissional().getProfissionalId());
+            if (profissionalOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Profissional não encontrado.");
+            }
 
-        ProfissionalModel profissional = profissionalOptional.get();
-        TriagemModel triagem = triagemOptional.get();
+            ProfissionalModel profissional = profissionalOptional.get();
+            TriagemModel triagem = triagemOptional.get();
 
-        if(feedbackProfissionalRecordDto.avaliacaoseveridade()<=0 || feedbackProfissionalRecordDto.avaliacaoseveridade()>6 ){
-            throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
-        }
-        if(feedbackProfissionalRecordDto.avaliacaoeficacia()<=0 || feedbackProfissionalRecordDto.avaliacaoeficacia()>6 ){
-            throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
-        }
+            if(feedbackProfissionalRecordDto.avaliacaoseveridade()<=0 || feedbackProfissionalRecordDto.avaliacaoseveridade()>6 ){
+                throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
+            }
+            if(feedbackProfissionalRecordDto.avaliacaoeficacia()<=0 || feedbackProfissionalRecordDto.avaliacaoeficacia()>6 ){
+                throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
+            }
 
+            Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
+                    feedbackProfissionalRepository.findProfissionalTriagem(profissional.getProfissionalId(),triagem.getTriagemId() );
+            if(!feedbackProfissionalModelOptional.isEmpty()){
+                throw new NotFoundException("Error: profissional, triagemId  já existem na TB_FEEDBACKPROFISSIONAL.");
+            }
 
-        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional =
-                feedbackProfissionalRepository.findProfissionalTriagem(profissional.getProfissionalId(),triagem.getTriagemId() );
-        if(!feedbackProfissionalModelOptional.isEmpty()){
-            throw new NotFoundException("Error: profissional, triagemId  já existem na TB_FEEDBACKPROFISSIONAL.");
-        }
+            var feedbackprofissionalModel = new FeedbackProfissionalModel();
 
-        var feedbackprofissionalModel = new FeedbackProfissionalModel();
+            CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackprofissionalModel);
 
-        CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedbackprofissionalModel);
+            feedbackprofissionalModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
+            feedbackprofissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
 
-        feedbackprofissionalModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
-        feedbackprofissionalModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+            feedbackprofissionalModel.setProfissional(profissional);
+            feedbackprofissionalModel.setTriagem(triagem);
 
-        feedbackprofissionalModel.setProfissional(profissional);
-        feedbackprofissionalModel.setTriagem(triagem);
-
-        return feedbackProfissionalRepository.save(feedbackprofissionalModel);
+            return feedbackProfissionalRepository.save(feedbackprofissionalModel);
+            }
 
     }
 
@@ -102,38 +103,36 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     }
 
     @Override
-    public FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID triagemId, UUID profissionalId, UUID feedbackprofissionalId ) {
+    public FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID feedbackprofissionalId ) {
 
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
 
-        if (profissionalOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Profissional não encontrado.");
+        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = findById(feedbackprofissionalId);
+        if (feedbackProfissionalModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Feedback não encontrado.");
+        }else {
+            Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(feedbackProfissionalModelOptional.get().getProfissional().getProfissionalId());
+            if (profissionalOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Profissional não encontrado.");
+            }
+            Optional<TriagemModel> triagemOptional = triagemService.findById(feedbackProfissionalModelOptional.get().getTriagem().getTriagemId());
+            if (triagemOptional.isEmpty()) {
+                throw new NotFoundException("Erro: Triagem não encontrada.");
+            }
+
+            if (feedbackProfissionalRecordDto.avaliacaoseveridade() <= 0 || feedbackProfissionalRecordDto.avaliacaoseveridade() > 6) {
+                throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
+            }
+            if (feedbackProfissionalRecordDto.avaliacaoeficacia() <= 0 || feedbackProfissionalRecordDto.avaliacaoeficacia() > 6) {
+                throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
+            }
+
+            FeedbackProfissionalModel feedback = feedbackProfissionalModelOptional.get();
+
+            CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedback);
+            feedback.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            return feedbackProfissionalRepository.save(feedback);
         }
-        if (triagemOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Triagem não encontrada.");
-        }
-
-
-        if(feedbackProfissionalRecordDto.avaliacaoseveridade()<=0 || feedbackProfissionalRecordDto.avaliacaoseveridade()>6 ){
-            throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
-        }
-        if(feedbackProfissionalRecordDto.avaliacaoeficacia()<=0 || feedbackProfissionalRecordDto.avaliacaoeficacia()>6 ){
-            throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
-        }
-
-        Optional<FeedbackProfissionalModel> feedbackOptional = findProfissionalTriagemInFeedback(profissionalId, triagemId, feedbackprofissionalId);
-
-        if (feedbackOptional.isEmpty()) {
-            throw new NotFoundException("Erro: FeedBackProfissional não encontrado.");
-        }
-
-        FeedbackProfissionalModel feedback = feedbackOptional.get();
-
-        CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedback);
-        feedback.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-
-        return  feedbackProfissionalRepository.save(feedback);
     }
 
     @Override

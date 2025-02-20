@@ -10,7 +10,7 @@ import java.util.UUID;
 
 
 public interface FeedbackPacienteService {
-    FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID pacienteId, UUID triagemId);
+    FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID triagemId);
 
     Page<FeedbackPacienteModel> findAll( Pageable pageable);
 
@@ -18,7 +18,7 @@ public interface FeedbackPacienteService {
 
     Optional<FeedbackPacienteModel> findPacienteTriagemInFeedback(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId) ;
 
-    FeedbackPacienteModel update(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto);
+    FeedbackPacienteModel update( UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto);
 
     void delete(UUID feedbackpacienteId);
 }

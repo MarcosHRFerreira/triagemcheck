@@ -101,45 +101,48 @@ public class TriagemServiceImpl implements TriagemService {
         return triagemModelOptional;
     }
     @Override
-    public TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId, UUID pacienteId, UUID profissionalId) {
+    public TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId ) {
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        Optional<TriagemModel> triagemModelOptional = findById(triagemId);
+        if (triagemModelOptional.isEmpty()) {
+            throw new NotFoundException("Erro: Triagem não encontrada.");
+        }else {
 
-        if (pacienteOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
+               Optional<PacienteModel> pacienteOptional = pacienteService.findById(triagemModelOptional.get().getPaciente().getPacienteId());
+                if (pacienteOptional.isEmpty()) {
+                    throw new NotFoundException("Erro: Paciente não encontrado.");
+                }
+                Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(triagemModelOptional.get().getProfissional().getProfissionalId());
+                if (profissionalOptional.isEmpty()) {
+                    throw new NotFoundException("Erro: Profissional não encontrado.");
+                }
+
+                PacienteModel paciente =pacienteOptional.get();
+                ProfissionalModel profissional = profissionalOptional.get();
+                TriagemModel triagem = triagemModelOptional.get();
+
+                if (triagemRecordDto.enfermagemId() != null) {
+                    Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
+                    if (!existingRecord.isPresent()) {
+                        throw new NoValidException("Erro: Registro de enfermagem não existe.");
+                    }
+                }
+                if (profissional.getCrm().isEmpty()) {
+                    throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
+                }
+                if (profissional.getStatusOperacional().equals(StatusOperacional.INATIVO)) {
+                    throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
+                }
+
+                CustomBeanUtils.copyProperties(triagemRecordDto, triagem);
+                triagem.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+                triagem.setProfissional(profissional);
+                triagem.setPaciente(paciente);
+
+                return triagemRepository.save(triagem);
+
         }
-        if (profissionalOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Profissional não encontrado.");
-        }
-
-        ProfissionalModel profissional  = profissionalOptional.get();
-
-        Optional<TriagemModel> triagemOptional = findPacienteProfissionalInTriagem(pacienteId, profissionalId, triagemId);
-        if (triagemOptional.isEmpty()) {
-            throw new NotFoundException("Error: pacienteId, profissionalId, triagemId não existem na TB_TRIAGENS.");
-        }
-
-       TriagemModel triagem = triagemOptional.get();
-
-        if(triagemRecordDto.enfermagemId() !=null) {
-            Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
-            if (!existingRecord.isPresent()) {
-                throw new NoValidException("Erro: Registro de enfermagem não existe.");
-            }
-        }
-
-        if(profissional.getCrm().isEmpty()){
-            throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
-        }
-        if(profissional.getStatusOperacional().equals(StatusOperacional.INATIVO)){
-            throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
-        }
-
-
-       CustomBeanUtils.copyProperties(triagemRecordDto,triagem);
-        triagem.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-       return  triagemRepository.save(triagem);
     }
     @Override
     public Page<TriagemCompletaRecordDto> findTriagemCompleta(Pageable pageable,String cpf) {
