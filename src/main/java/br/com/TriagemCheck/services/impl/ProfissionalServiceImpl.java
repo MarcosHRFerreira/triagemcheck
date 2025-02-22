@@ -116,9 +116,12 @@ public class ProfissionalServiceImpl implements ProfissionalService {
 
         Optional<TriagemModel> triagemModelOptional = triagemRepository.findProficionalIntoTriagem(profissionalId);
         if (!triagemModelOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Existe Triagem para esse Profissional, não será permitido o Delete. ");
+            throw new NoValidException("Erro: Existe Triagem para esse Profissional, não será permitido o Delete. ");
         }
         profissionalRepository.deleteById(profissionalId);
     }
+
+
+
 
 }

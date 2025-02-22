@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,8 +61,8 @@ public class FeedbackPacienteController {
     @Operation(summary = "Obter todos os feedbacks dos pacientes")
     @ApiResponse(responseCode = "200", description = "Feedbacks obtidos com sucesso")
     @GetMapping
-    public ResponseEntity<Page<FeedbackPacienteModel>> getAll(Pageable pageable,
-                                            @Parameter(description = "ID do feedback do paciente") @RequestParam(required = false) UUID feedbackpacienteId){
+    public ResponseEntity<Page<FeedbackPacienteModel>> getAll(@PageableDefault(sort ="avaliacao"  ) Pageable pageable,
+                                            @Parameter(description = "ID do feedback do paciente") @RequestParam(required = false)  UUID feedbackpacienteId){
         Page<FeedbackPacienteModel>  feedbackpacienteModelPage = feedbackPacienteService.findAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(feedbackpacienteModelPage);
     }
