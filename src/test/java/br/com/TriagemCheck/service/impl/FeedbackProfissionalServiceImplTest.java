@@ -1,7 +1,6 @@
 package br.com.TriagemCheck.service.impl;
 
 import br.com.TriagemCheck.dtos.FeedbackProfissionalRecordDto;
-import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.FeedbackProfissionalModel;
 import br.com.TriagemCheck.models.ProfissionalModel;

@@ -1,7 +1,6 @@
 package br.com.TriagemCheck.service.impl;
 
 import br.com.TriagemCheck.dtos.FeedbackPacienteRecordDto;
-import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.FeedbackPacienteModel;
 import br.com.TriagemCheck.models.PacienteModel;

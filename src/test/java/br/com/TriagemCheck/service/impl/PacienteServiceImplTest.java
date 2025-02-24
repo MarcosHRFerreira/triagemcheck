@@ -9,8 +9,6 @@ import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.PacienteModel;
 import br.com.TriagemCheck.repositories.PacienteRepository;
 import br.com.TriagemCheck.services.impl.PacienteServiceImpl;
-import br.com.TriagemCheck.validations.EmailValidator;
-import br.com.TriagemCheck.validations.ValidaCPF;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

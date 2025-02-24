@@ -50,11 +50,10 @@ public class ResultClinicoContoller {
     })
     @PostMapping("/{triagemId}")
     public ResponseEntity<Object> salvarResultClinico(@Parameter(description = "ID da triagem") @PathVariable(value = "triagemId") UUID triagemId,
-                                                      @RequestBody @Valid ResultClinicoRecordDto resultClinicoRecordDto, Errors errors){
+                                                      @RequestBody @Valid ResultClinicoRecordDto resultClinicoRecordDto){
 
         logger.debug("POST saveResultClinico resultClinicoRecordDto received {} ", resultClinicoRecordDto);
 
-        resultClinicoValidator.validate(resultClinicoRecordDto, errors);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(resultClinicoService.save(resultClinicoRecordDto, triagemId));
