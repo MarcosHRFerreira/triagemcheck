@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,7 +83,7 @@ class ProfissionalControllerTest {
     @Test
     void testGetOne() {
         when(profissionalService.findById(profissionalId))
-                .thenReturn(Optional.of(new ProfissionalModel()));
+                .thenReturn(new ProfissionalModel());
 
         ResponseEntity<Object> response = profissionalController.getOne(profissionalId);
 

@@ -66,12 +66,12 @@ class TriagemServiceTest {
 
     @Test
     void testFindById() {
-        Optional<TriagemModel> triagemModelOptional = Optional.of(new TriagemModel());
-        when(triagemService.findById(triagemId)).thenReturn(triagemModelOptional);
+        TriagemModel triagemModel = new TriagemModel();
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
 
-        Optional<TriagemModel> result = triagemService.findById(triagemId);
+        TriagemModel result = triagemService.findById(triagemId);
 
-        assertEquals(triagemModelOptional, result);
+        assertEquals(triagemModel, result);
         verify(triagemService, times(1)).findById(triagemId);
     }
 

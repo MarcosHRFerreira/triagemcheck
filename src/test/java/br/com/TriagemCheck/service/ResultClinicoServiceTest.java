@@ -68,10 +68,10 @@ class ResultClinicoServiceTest {
 
     @Test
     void testFindById() {
-        Optional<ResultClinicosModel> resultClinicosModelOptional = Optional.of(new ResultClinicosModel());
+        ResultClinicosModel resultClinicosModelOptional = new ResultClinicosModel();
         when(resultClinicoService.findById(resultadoId)).thenReturn(resultClinicosModelOptional);
 
-        Optional<ResultClinicosModel> result = resultClinicoService.findById(resultadoId);
+        ResultClinicosModel result = resultClinicoService.findById(resultadoId);
 
         assertEquals(resultClinicosModelOptional, result);
         verify(resultClinicoService, times(1)).findById(resultadoId);

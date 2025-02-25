@@ -4,6 +4,7 @@ import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.converter.TriagemConverter;
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
+import br.com.TriagemCheck.enums.CorProtocolo;
 import br.com.TriagemCheck.enums.StatusOperacional;
 import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
@@ -46,17 +47,14 @@ public class TriagemServiceImpl implements TriagemService {
     @Override
     public TriagemModel save(TriagemRecordDto triagemRecordDto,  UUID pacienteId, UUID profissionalId) {
 
-        Optional<PacienteModel> pacienteOptional = pacienteService.findById(pacienteId);
-        Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(profissionalId);
+        PacienteModel pacienteOptional = pacienteService.findById(pacienteId);
+        ProfissionalModel profissionalOptional = profissionalService.findById(profissionalId);
 
-        if (pacienteOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
-        }
-        if (profissionalOptional.isEmpty()) {
+        if (profissionalOptional == null) {
             throw new NotFoundException("Erro: Profissional não encontrado.");
         }
-        PacienteModel paciente = pacienteOptional.get();
-        ProfissionalModel profissional  = profissionalOptional.get();
+        PacienteModel paciente = pacienteOptional;
+        ProfissionalModel profissional  = profissionalOptional;
 
         var triagemModel = new TriagemModel();
         CustomBeanUtils.copyProperties(triagemRecordDto, triagemModel);
@@ -79,14 +77,16 @@ public class TriagemServiceImpl implements TriagemService {
 
         return triagemRepository.save(triagemModel);
     }
+
     @Override
-    public Optional<TriagemModel> findById(UUID triagemId){
-        Optional<TriagemModel> triagemModelOptional = triagemRepository.findById(triagemId);
-        if(triagemModelOptional.isEmpty()){
+    public TriagemModel findById(UUID triagemId){
+       TriagemModel triagemModel =  triagemRepository.findTriagemId(triagemId);
+        if(triagemModel == null){
             throw new NotFoundException("Erro: Triagem não existe.");
         }
-        return triagemModelOptional;
+        return triagemModel;
     }
+
     @Override
     public Page<TriagemModel> findAll( Pageable pageable) {
         return triagemRepository.findAll(pageable);
@@ -103,44 +103,51 @@ public class TriagemServiceImpl implements TriagemService {
     @Override
     public TriagemModel update(TriagemRecordDto triagemRecordDto, UUID triagemId ) {
 
-        Optional<TriagemModel> triagemModelOptional = findById(triagemId);
-        if (triagemModelOptional.isEmpty()) {
+        TriagemModel triagemModel = triagemRepository.findTriagemId(triagemId);
+        if (triagemModel ==null) {
             throw new NotFoundException("Erro: Triagem não encontrada.");
         }else {
 
-               Optional<PacienteModel> pacienteOptional = pacienteService.findById(triagemModelOptional.get().getPaciente().getPacienteId());
-                if (pacienteOptional.isEmpty()) {
-                    throw new NotFoundException("Erro: Paciente não encontrado.");
-                }
-                Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(triagemModelOptional.get().getProfissional().getProfissionalId());
-                if (profissionalOptional.isEmpty()) {
-                    throw new NotFoundException("Erro: Profissional não encontrado.");
-                }
+            PacienteModel pacienteOptional = pacienteService.findById(triagemModel.getPaciente().getPacienteId());
 
-                PacienteModel paciente =pacienteOptional.get();
-                ProfissionalModel profissional = profissionalOptional.get();
-                TriagemModel triagem = triagemModelOptional.get();
+            ProfissionalModel profissionalOptional = profissionalService.findById(triagemModel.getProfissional().getProfissionalId());
 
-                if (triagemRecordDto.enfermagemId() != null) {
-                    Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
-                    if (!existingRecord.isPresent()) {
-                        throw new NoValidException("Erro: Registro de enfermagem não existe.");
-                    }
+            if (profissionalOptional == null) {
+                throw new NotFoundException("Erro: Profissional não encontrado.");
+            }
+
+            PacienteModel paciente =pacienteOptional;
+            ProfissionalModel profissional = profissionalOptional;
+            TriagemModel triagem = triagemModel;
+
+            if (triagemRecordDto.enfermagemId() != null) {
+                Optional<ProfissionalModel> existingRecord = profissionalRepository.findById(triagemRecordDto.enfermagemId());
+                if (!existingRecord.isPresent()) {
+                    throw new NoValidException("Erro: Registro de enfermagem não existe.");
                 }
-                if (profissional.getCrm().isEmpty()) {
-                    throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
-                }
-                if (profissional.getStatusOperacional().equals(StatusOperacional.INATIVO)) {
-                    throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
-                }
+            }
+            if (profissional.getCrm().isEmpty()) {
+                throw new NoValidException("Erro: Profissional deve possuir um CRM válido.");
+            }
+            if (profissional.getStatusOperacional().equals(StatusOperacional.INATIVO)) {
+                throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
+            }
 
-                CustomBeanUtils.copyProperties(triagemRecordDto, triagem);
-                triagem.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+            try {
+                CorProtocolo corProtocolo = CorProtocolo.valueOf(triagemRecordDto.corProtocolo().toString());
+                triagem.setCorProtocolo(corProtocolo);
+            } catch (IllegalArgumentException e) {
+                throw new NoValidException("Erro: Cor do Protocolo inválido.");
+            }
 
-                triagem.setProfissional(profissional);
-                triagem.setPaciente(paciente);
 
-                return triagemRepository.save(triagem);
+            CustomBeanUtils.copyProperties(triagemRecordDto, triagem);
+            triagem.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
+
+            triagem.setProfissional(profissional);
+            triagem.setPaciente(paciente);
+
+            return triagemRepository.save(triagem);
 
         }
     }

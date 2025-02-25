@@ -14,7 +14,7 @@ public interface FeedbackPacienteService {
 
     Page<FeedbackPacienteModel> findAll( Pageable pageable);
 
-    Optional<FeedbackPacienteModel> findById(UUID feedbackpacienteId);
+    FeedbackPacienteModel findById(UUID feedbackpacienteId);
 
     Optional<FeedbackPacienteModel> findPacienteTriagemInFeedback(UUID pacienteId, UUID triagemId, UUID feedbackpacienteId) ;
 

@@ -14,7 +14,7 @@ public interface ProfissionalService {
 
     boolean existsBycrm(String crm);
 
-    Optional<ProfissionalModel> findById(UUID profissionalId);
+    ProfissionalModel findById(UUID profissionalId);
 
     Page<ProfissionalModel> findAll(Pageable pageable);
 

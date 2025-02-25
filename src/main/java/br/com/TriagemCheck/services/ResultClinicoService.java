@@ -14,7 +14,7 @@ public interface ResultClinicoService {
 
     Page<ResultClinicosModel> findAll(Pageable pageable);
 
-    Optional<ResultClinicosModel> findById(UUID resultadoId);
+    ResultClinicosModel findById(UUID resultadoId);
 
     Optional<ResultClinicosModel> findProfissionalTriagemInResultClinico(UUID profissionalId, UUID triagemId, UUID resultadoId);
 

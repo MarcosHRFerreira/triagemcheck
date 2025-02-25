@@ -35,19 +35,22 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     public FeedbackProfissionalModel save(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID triagemId) {
 
 
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        TriagemModel triagemOptional = triagemService.findById(triagemId);
 
-        if (triagemOptional.isEmpty()) {
+        if (triagemOptional ==null) {
             throw new NotFoundException("Erro: Triagem não encontrada.");
         }else {
 
-            Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(triagemOptional.get().getProfissional().getProfissionalId());
-            if (profissionalOptional.isEmpty()) {
+            UUID profissionalId = triagemOptional.getProfissional().getProfissionalId();
+
+            ProfissionalModel profissionalOptional = profissionalService.findById(profissionalId);
+
+            if (profissionalOptional == null) {
                 throw new NotFoundException("Erro: Profissional não encontrado.");
             }
 
-            ProfissionalModel profissional = profissionalOptional.get();
-            TriagemModel triagem = triagemOptional.get();
+            ProfissionalModel profissional = profissionalOptional;
+            TriagemModel triagem = triagemOptional;
 
             if(feedbackProfissionalRecordDto.avaliacaoseveridade()<=0 || feedbackProfissionalRecordDto.avaliacaoseveridade()>6 ){
                 throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
@@ -84,9 +87,9 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
 
 
     @Override
-    public Optional<FeedbackProfissionalModel> findById(UUID feedbackprofissionalId) {
-        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = feedbackProfissionalRepository.findById(feedbackprofissionalId);
-        if(feedbackProfissionalModelOptional.isEmpty()){
+    public FeedbackProfissionalModel findById(UUID feedbackprofissionalId) {
+        FeedbackProfissionalModel feedbackProfissionalModelOptional = feedbackProfissionalRepository.findByfeedbackprofissionalId(feedbackprofissionalId);
+        if(feedbackProfissionalModelOptional == null){
             throw new NotFoundException("Error: FeedbackProfissional não encontrado.");
         }
         return feedbackProfissionalModelOptional;
@@ -106,16 +109,17 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     public FeedbackProfissionalModel update(FeedbackProfissionalRecordDto feedbackProfissionalRecordDto, UUID feedbackprofissionalId ) {
 
 
-        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = findById(feedbackprofissionalId);
-        if (feedbackProfissionalModelOptional.isEmpty()) {
+        FeedbackProfissionalModel feedbackProfissionalModelOptional = feedbackProfissionalRepository.findByfeedbackprofissionalId(feedbackprofissionalId);
+
+        if (feedbackProfissionalModelOptional == null) {
             throw new NotFoundException("Erro: Feedback não encontrado.");
         }else {
-            Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(feedbackProfissionalModelOptional.get().getProfissional().getProfissionalId());
-            if (profissionalOptional.isEmpty()) {
+            ProfissionalModel profissionalOptional = profissionalService.findById(feedbackProfissionalModelOptional.getProfissional().getProfissionalId());
+            if (profissionalOptional == null) {
                 throw new NotFoundException("Erro: Profissional não encontrado.");
             }
-            Optional<TriagemModel> triagemOptional = triagemService.findById(feedbackProfissionalModelOptional.get().getTriagem().getTriagemId());
-            if (triagemOptional.isEmpty()) {
+            TriagemModel triagemOptional = triagemService.findById(feedbackProfissionalModelOptional.getTriagem().getTriagemId());
+            if (triagemOptional == null) {
                 throw new NotFoundException("Erro: Triagem não encontrada.");
             }
 
@@ -126,7 +130,7 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
                 throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
             }
 
-            FeedbackProfissionalModel feedback = feedbackProfissionalModelOptional.get();
+            FeedbackProfissionalModel feedback = feedbackProfissionalModelOptional;
 
             CustomBeanUtils.copyProperties(feedbackProfissionalRecordDto, feedback);
             feedback.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -138,9 +142,9 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
     @Override
     public void delete(UUID feedbackprofissionalId) {
 
-        Optional<FeedbackProfissionalModel> feedbackOptional = findById(feedbackprofissionalId);
+        FeedbackProfissionalModel feedbackProfissionalModelOptional = feedbackProfissionalRepository.findByfeedbackprofissionalId(feedbackprofissionalId);
 
-        if (feedbackOptional.isEmpty()) {
+        if (feedbackProfissionalModelOptional == null) {
             throw new NotFoundException("Erro: FeedBackProfissional não encontrado.");
         }
 

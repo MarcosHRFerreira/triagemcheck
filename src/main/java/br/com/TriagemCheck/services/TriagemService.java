@@ -14,7 +14,7 @@ public interface TriagemService {
 
     TriagemModel save(TriagemRecordDto triagemRecordDto, UUID pacienteId, UUID profissionalId);
 
-    Optional<TriagemModel> findById(UUID triagemId);
+    TriagemModel findById(UUID triagemId);
 
     Page<TriagemModel> findAll( Pageable pageable);
 

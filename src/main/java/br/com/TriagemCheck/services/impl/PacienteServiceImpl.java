@@ -24,10 +24,11 @@ import java.util.UUID;
 public class PacienteServiceImpl implements PacienteService {
 
     final PacienteRepository pacienteRepository;
+    final TriagemRepository triagemRepository;
 
-
-    public PacienteServiceImpl(PacienteRepository pacienteRepository) {
+    public PacienteServiceImpl(PacienteRepository pacienteRepository, TriagemRepository triagemRepository) {
         this.pacienteRepository = pacienteRepository;
+        this.triagemRepository = triagemRepository;
     }
     EmailValidator emailValidator = EmailValidator.getInstance();
 
@@ -68,29 +69,27 @@ public class PacienteServiceImpl implements PacienteService {
         return pacienteRepository.findAll(pageable);
     }
     @Override
-    public Optional<PacienteModel> findByCpf(String cpf){
-        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findByCpf(cpf);
-        if(pacienteModelOptional.isEmpty()){
+    public PacienteModel findByCpf(String cpf){
+        PacienteModel pacienteModel = pacienteRepository.findByCpf(cpf);
+        if(pacienteModel == null){
             throw new NotFoundException("Erro: Paciente não encontrado.");
         }
-        return pacienteModelOptional;
+        return pacienteModel;
     }
     @Override
     public PacienteModel update(PacienteRecordDto pacienteRecordDto, UUID pacienteId) {
 
-        if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
-            throw new NoValidException("Erro: Email inválido.");
-        }
-        if (!ValidaCPF.isCPF(pacienteRecordDto.cpf())) {
-            throw new NoValidException("Erro: CPF inválido.");
+        if(pacienteRecordDto.email()!=null) {
+
+            if (!pacienteRecordDto.email().isEmpty() && !emailValidator.isValid(pacienteRecordDto.email())) {
+                throw new NoValidException("Erro: Email inválido.");
+            }
+            if (!ValidaCPF.isCPF(pacienteRecordDto.cpf())) {
+                throw new NoValidException("Erro: CPF inválido.");
+            }
         }
 
-        Optional<PacienteModel> pacienteModelOptional = findById(pacienteId);
-
-        if (pacienteModelOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
-        } else {
-            var pacienteModel = pacienteModelOptional.get();
+        PacienteModel pacienteModel  =  getPaciente(pacienteId);
 
             if(!pacienteModel.getCpf().equals(pacienteRecordDto.cpf()) && existsBycpf(pacienteRecordDto.cpf()) ){
                 throw new NoValidException("Erro: CPF já existe.");
@@ -102,29 +101,35 @@ public class PacienteServiceImpl implements PacienteService {
             CustomBeanUtils.copyProperties(pacienteRecordDto, pacienteModel);
             pacienteModel.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
             return pacienteRepository.save(pacienteModel);
-        }
+
 
     }
     @Transactional
     @Override
     public void delete(UUID pacienteId) {
 
-        Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
+           getPaciente(pacienteId);
 
-        if (pacienteModelOptional.isEmpty()) {
-            throw new NotFoundException("Erro: Paciente não encontrado.");
-        }
+            Optional<TriagemModel> triagemModelOptional = triagemRepository.findPacienteIntoTriagem(pacienteId);
 
-        pacienteRepository.deleteById(pacienteId);
+            if(!triagemModelOptional.isEmpty()){
+                throw new NoValidException("Erro: A Deleção não será posssível, existem(s) Triagem associada ao paciente.");
+            }
+            pacienteRepository.deleteById(pacienteId);
 
     }
     @Override
-    public Optional<PacienteModel> findById(UUID pacienteId) {
+    public PacienteModel findById(UUID pacienteId) {
+
+        return getPaciente(pacienteId);
+    }
+
+    public PacienteModel getPaciente(UUID pacienteId) {
         Optional<PacienteModel> pacienteModelOptional = pacienteRepository.findById(pacienteId);
-        if(pacienteModelOptional.isEmpty()){
+        if (pacienteModelOptional.isEmpty()) {
             throw new NotFoundException("Erro: Paciente não encontrado.");
         }
-        return pacienteModelOptional;
+        return pacienteModelOptional.get();
     }
 
 

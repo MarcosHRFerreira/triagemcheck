@@ -89,8 +89,8 @@ class TriagemServiceImplTest {
 
     @Test
     void testSaveTriagemSuccessfully() {
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.of(pacienteModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.of(profissionalModel));
+        when(pacienteService.findById(pacienteId)).thenReturn(pacienteModel);
+        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
         when(profissionalRepository.findById(any(UUID.class))).thenReturn(Optional.of(profissionalModel));
         when(triagemRepository.save(any(TriagemModel.class))).thenReturn(triagemModel);
 
@@ -102,7 +102,7 @@ class TriagemServiceImplTest {
 
     @Test
     void testSaveTriagemPacienteNotFound() {
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.empty());
+        when(pacienteService.findById(pacienteId)).thenThrow(new NotFoundException("Erro: Paciente não encontrado."));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             triagemService.save(triagemRecordDto, pacienteId, profissionalId);
@@ -111,10 +111,11 @@ class TriagemServiceImplTest {
         assertEquals("Erro: Paciente não encontrado.", exception.getMessage());
     }
 
+
     @Test
     void testSaveTriagemProfissionalNotFound() {
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.of(pacienteModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.empty());
+        when(pacienteService.findById(pacienteId)).thenReturn(pacienteModel);
+        when(profissionalService.findById(profissionalId)).thenThrow(new NotFoundException("Erro: Profissional não encontrado."));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             triagemService.save(triagemRecordDto, pacienteId, profissionalId);
@@ -126,8 +127,8 @@ class TriagemServiceImplTest {
     @Test
     void testSaveTriagemNoValidException() {
         profissionalModel.setCrm("");
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.of(pacienteModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.of(profissionalModel));
+        when(pacienteService.findById(pacienteId)).thenReturn(pacienteModel);
+        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
         when(profissionalRepository.findById(any(UUID.class))).thenReturn(Optional.of(profissionalModel));
 
         NoValidException exception = assertThrows(NoValidException.class, () -> {
@@ -139,22 +140,27 @@ class TriagemServiceImplTest {
 
     @Test
     void testFindByIdSuccessfully() {
-        when(triagemRepository.findById(any(UUID.class))).thenReturn(Optional.of(triagemModel));
+        UUID uuid = UUID.randomUUID();
+        TriagemModel triagemModel = new TriagemModel();
+        when(triagemRepository.findTriagemId(uuid)).thenReturn(triagemModel);
 
-        Optional<TriagemModel> result = triagemService.findById(UUID.randomUUID());
+        TriagemModel result = triagemService.findById(uuid);
 
-        assertTrue(result.isPresent());
+        assertEquals(triagemModel, result);
+        verify(triagemRepository, times(1)).findTriagemId(uuid);
     }
 
     @Test
     void testFindByIdNotFound() {
-        when(triagemRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        UUID triagemId = UUID.randomUUID();
+        when(triagemRepository.findTriagemId(any(UUID.class))).thenReturn(null);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            triagemService.findById(UUID.randomUUID());
+            triagemService.findById(triagemId);
         });
 
         assertEquals("Erro: Triagem não existe.", exception.getMessage());
+
     }
 
     @Test

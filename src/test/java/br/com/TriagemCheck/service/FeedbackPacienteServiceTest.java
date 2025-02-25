@@ -67,10 +67,10 @@ class FeedbackPacienteServiceTest {
 
     @Test
     void testFindById() {
-        Optional<FeedbackPacienteModel> feedbackPacienteModelOptional = Optional.of(new FeedbackPacienteModel());
+       FeedbackPacienteModel feedbackPacienteModelOptional = new FeedbackPacienteModel();
         when(feedbackPacienteService.findById(feedbackPacienteId)).thenReturn(feedbackPacienteModelOptional);
 
-        Optional<FeedbackPacienteModel> result = feedbackPacienteService.findById(feedbackPacienteId);
+        FeedbackPacienteModel result = feedbackPacienteService.findById(feedbackPacienteId);
 
         assertEquals(feedbackPacienteModelOptional, result);
         verify(feedbackPacienteService, times(1)).findById(feedbackPacienteId);

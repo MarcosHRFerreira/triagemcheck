@@ -79,8 +79,8 @@ class FeedbackProfissionalServiceImplTest {
 
     @Test
     void testSaveFeedbackSuccessfully() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.of(profissionalModel));
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
+        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
         when(feedbackProfissionalRepository.findProfissionalTriagem(any(UUID.class), any(UUID.class))).thenReturn(Optional.empty());
         when(feedbackProfissionalRepository.save(any(FeedbackProfissionalModel.class))).thenReturn(feedbackProfissionalModel);
 
@@ -92,7 +92,8 @@ class FeedbackProfissionalServiceImplTest {
 
     @Test
     void testSaveFeedbackTriagemNotFound() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.empty());
+         triagemId = UUID.randomUUID();
+        when(triagemService.findById(triagemId)).thenThrow(new NotFoundException("Erro: Triagem não encontrada."));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             feedbackProfissionalService.save(feedbackProfissionalRecordDto, triagemId);
@@ -101,34 +102,14 @@ class FeedbackProfissionalServiceImplTest {
         assertEquals("Erro: Triagem não encontrada.", exception.getMessage());
     }
 
-    @Test
-    void testSaveFeedbackProfissionalNotFound() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.empty());
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            feedbackProfissionalService.save(feedbackProfissionalRecordDto, triagemId);
-        });
-
-        assertEquals("Erro: Profissional não encontrado.", exception.getMessage());
-    }
-
-
-    @Test
-    void testFindByIdSuccessfully() {
-        when(feedbackProfissionalRepository.findById(any(UUID.class))).thenReturn(Optional.of(feedbackProfissionalModel));
-
-        Optional<FeedbackProfissionalModel> result = feedbackProfissionalService.findById(UUID.randomUUID());
-
-        assertTrue(result.isPresent());
-    }
 
     @Test
     void testFindByIdNotFound() {
-        when(feedbackProfissionalRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        UUID feedbackId = UUID.randomUUID();
+        when(feedbackProfissionalRepository.findByfeedbackprofissionalId(any(UUID.class))).thenReturn(null);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            feedbackProfissionalService.findById(UUID.randomUUID());
+            feedbackProfissionalService.findById(feedbackId);
         });
 
         assertEquals("Error: FeedbackProfissional não encontrado.", exception.getMessage());

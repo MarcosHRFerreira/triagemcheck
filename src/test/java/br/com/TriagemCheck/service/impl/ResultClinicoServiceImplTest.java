@@ -72,8 +72,8 @@ class ResultClinicoServiceImplTest {
 
     @Test
     void testSave() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.of(profissionalModel));
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
+        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
         when(resultClinicoRepository.findByIdTriagem(triagemId)).thenReturn(Optional.empty());
         when(resultClinicoRepository.save(any(ResultClinicosModel.class))).thenReturn(resultClinicosModel);
 
@@ -100,12 +100,12 @@ class ResultClinicoServiceImplTest {
 
     @Test
     void testFindById() {
-        when(resultClinicoRepository.findById(resultadoId)).thenReturn(Optional.of(resultClinicosModel));
+        when(resultClinicoRepository.findByIdresultadoId(resultadoId)).thenReturn((resultClinicosModel));
 
-        Optional<ResultClinicosModel> result = resultClinicoService.findById(resultadoId);
+        ResultClinicosModel result = resultClinicoService.findById(resultadoId);
 
-        assertTrue(result.isPresent());
-        verify(resultClinicoRepository).findById(resultadoId);
+        assertNotNull(result);
+        verify(resultClinicoRepository).findByIdresultadoId(resultadoId);
     }
 
     @Test
@@ -121,15 +121,15 @@ class ResultClinicoServiceImplTest {
 
     @Test
     void testUpdate() {
-        when(resultClinicoRepository.findById(resultadoId)).thenReturn(Optional.of(resultClinicosModel));
-        when(profissionalService.findById(profissionalId)).thenReturn(Optional.of(profissionalModel));
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
+        when(resultClinicoRepository.findByIdresultadoId(resultadoId)).thenReturn(resultClinicosModel);
+        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
         when(resultClinicoRepository.save(any(ResultClinicosModel.class))).thenReturn(resultClinicosModel);
 
         ResultClinicosModel result = resultClinicoService.update(resultClinicoRecordDto, resultadoId);
 
         assertNotNull(result);
-        verify(resultClinicoRepository).findById(resultadoId);
+        verify(resultClinicoRepository).findByIdresultadoId(resultadoId);
         verify(profissionalService).findById(profissionalId);
         verify(triagemService).findById(triagemId);
         verify(resultClinicoRepository).save(any(ResultClinicosModel.class));

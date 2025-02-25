@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
                 errors.put(fieldName, errorMessage);
             }
         }
-        var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(), "Erro: Formatação de data inválida", errors);
+        var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(),ex.getMessage() , errors);
         logger.error("HttpMessageNotReadableException message: {} ", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
     }

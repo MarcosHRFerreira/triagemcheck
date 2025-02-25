@@ -20,7 +20,6 @@ import org.springframework.validation.Errors;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,7 +92,7 @@ class PacienteControllerTest {
     @Test
     void testGetOne() {
         when(pacienteService.findById(pacienteId))
-                .thenReturn(Optional.of(new PacienteModel()));
+                .thenReturn(new PacienteModel());
 
         ResponseEntity<Object> response = pacienteController.getOne(pacienteId);
 
@@ -104,7 +103,7 @@ class PacienteControllerTest {
     @Test
     void testGetOneCpf() {
         when(pacienteService.findByCpf("cpf"))
-                .thenReturn(Optional.of(new PacienteModel()));
+                .thenReturn(new PacienteModel());
 
         ResponseEntity<Object> response = pacienteController.getOneCpf("cpf");
 

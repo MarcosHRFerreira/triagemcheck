@@ -38,19 +38,15 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     @Override
     public FeedbackPacienteModel save(FeedbackPacienteRecordDto feedbackPacienteRecordDto, UUID triagemId ) {
 
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        TriagemModel triagemOptional = triagemService.findById(triagemId);
 
-        if (triagemOptional.isEmpty()) {
+        if (triagemOptional == null) {
             throw new NotFoundException("Erro: Triagem não encontrada.");
         }else {
 
-            Optional<PacienteModel> pacienteOptional = pacienteService.findById(triagemOptional.get().getPaciente().getPacienteId());
-            if (pacienteOptional.isEmpty()) {
-                throw new NotFoundException("Erro: Paciente não encontrado.");
-            }
-            PacienteModel paciente = pacienteOptional.get();
+            PacienteModel paciente = pacienteService.findById(triagemOptional.getPaciente().getPacienteId());
 
-            TriagemModel triagem = triagemOptional.get();
+            TriagemModel triagem = triagemOptional;
 
             Optional<FeedbackPacienteModel> feedbackPacienteModelOptional =
                     feedbackPacienteRepository.findPacienteTriagem(paciente.getPacienteId(), triagem.getTriagemId() );
@@ -81,9 +77,9 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     }
 
     @Override
-    public Optional<FeedbackPacienteModel> findById(UUID feedbackpacienteId) {
-        Optional<FeedbackPacienteModel> feedbackPacienteModelOptional = feedbackPacienteRepository.findById(feedbackpacienteId);
-        if(feedbackPacienteModelOptional.isEmpty()){
+    public FeedbackPacienteModel findById(UUID feedbackpacienteId) {
+        FeedbackPacienteModel feedbackPacienteModelOptional = feedbackPacienteRepository.findByIdFeedbackPaciente(feedbackpacienteId);
+        if(feedbackPacienteModelOptional == null){
             throw new NotFoundException("Error: FeedbackPaciente não encontrado.");
         }
         return feedbackPacienteModelOptional;
@@ -102,21 +98,18 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     @Override
     public FeedbackPacienteModel update(UUID feedbackpacienteId, FeedbackPacienteRecordDto feedbackPacienteRecordDto) {
 
-        Optional<FeedbackPacienteModel> feedbackOptional = findById(feedbackpacienteId);
+        FeedbackPacienteModel feedbackOptional = feedbackPacienteRepository.findByIdFeedbackPaciente(feedbackpacienteId);
 
-        if (feedbackOptional.isEmpty()) {
+        if (feedbackOptional ==null) {
             throw new NotFoundException("Erro: Feedback não encontrado.");
         }else {
-            Optional<PacienteModel> pacienteOptional = pacienteService.findById(feedbackOptional.get().getPaciente().getPacienteId());
-            if (pacienteOptional.isEmpty()) {
-                throw new NotFoundException("Erro: Paciente não encontrado.");
-            }
-            Optional<TriagemModel> triagemOptional = triagemService.findById(feedbackOptional.get().getTriagem().getTriagemId());
-            if (triagemOptional.isEmpty()) {
+
+            TriagemModel triagemOptional = triagemService.findById(feedbackOptional.getTriagem().getTriagemId());
+            if (triagemOptional == null) {
                 throw new NotFoundException("Erro: Triagem não encontrada.");
             }
 
-            FeedbackPacienteModel feedback = feedbackOptional.get();
+            FeedbackPacienteModel feedback = feedbackOptional;
 
             if (feedbackPacienteRecordDto.avaliacao() <= 0 || feedbackPacienteRecordDto.avaliacao() > 6) {
                 throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
@@ -133,14 +126,13 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
     @Override
     public void delete(UUID feedbackpacienteId) {
 
-        Optional<FeedbackPacienteModel> feedbackOptional = findById(feedbackpacienteId);
+        FeedbackPacienteModel feedbackOptional = feedbackPacienteRepository.findByIdFeedbackPaciente(feedbackpacienteId);
 
-        if (feedbackOptional.isEmpty()) {
+        if (feedbackOptional == null) {
             throw new NotFoundException("Erro: FeedbackPaciente não encontrado.");
         }
-        FeedbackPacienteModel feedback = feedbackOptional.get();
+        FeedbackPacienteModel feedback = feedbackOptional;
         feedbackPacienteRepository.delete(feedback);
-
 
     }
 }

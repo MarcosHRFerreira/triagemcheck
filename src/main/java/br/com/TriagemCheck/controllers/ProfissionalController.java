@@ -64,7 +64,7 @@ public class ProfissionalController {
         logger.debug("Get getOne  profissionalId received {} ",profissionalId);
 
 
-       Optional<ProfissionalModel> profissional = profissionalService.findById(profissionalId);
+       ProfissionalModel profissional = profissionalService.findById(profissionalId);
         return ResponseEntity.status(HttpStatus.OK).body(profissional);
 
     }

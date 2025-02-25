@@ -67,11 +67,11 @@ public class ProfissionalServiceImpl implements ProfissionalService {
     }
 
     @Override
-    public Optional<ProfissionalModel> findById(UUID profissionalId){
+    public ProfissionalModel findById(UUID profissionalId){
 
-        Optional<ProfissionalModel> profissionalModelOptional = profissionalRepository.findById(profissionalId);
+        ProfissionalModel profissionalModelOptional = profissionalRepository.findByIdprofissionalId(profissionalId);
 
-        if (profissionalModelOptional.isEmpty()) {
+        if (profissionalModelOptional== null) {
             throw new NotFoundException("Erro: Profissional não encontrado.");
         }
 

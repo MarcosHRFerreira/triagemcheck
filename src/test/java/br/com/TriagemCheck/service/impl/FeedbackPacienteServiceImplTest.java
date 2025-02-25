@@ -78,8 +78,8 @@ class FeedbackPacienteServiceImplTest {
 
     @Test
     void testSaveFeedbackSuccessfully() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.of(pacienteModel));
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
+        when(pacienteService.findById(pacienteId)).thenReturn(pacienteModel);
         when(feedbackPacienteRepository.findPacienteTriagem(any(UUID.class), any(UUID.class))).thenReturn(Optional.empty());
         when(feedbackPacienteRepository.save(any(FeedbackPacienteModel.class))).thenReturn(feedbackPacienteModel);
 
@@ -91,7 +91,8 @@ class FeedbackPacienteServiceImplTest {
 
     @Test
     void testSaveFeedbackTriagemNotFound() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.empty());
+         triagemId = UUID.randomUUID();
+        when(triagemService.findById(triagemId)).thenThrow(new NotFoundException("Erro: Triagem não encontrada."));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             feedbackPacienteService.save(feedbackPacienteRecordDto, triagemId);
@@ -102,8 +103,8 @@ class FeedbackPacienteServiceImplTest {
 
     @Test
     void testSaveFeedbackPacienteNotFound() {
-        when(triagemService.findById(triagemId)).thenReturn(Optional.of(triagemModel));
-        when(pacienteService.findById(pacienteId)).thenReturn(Optional.empty());
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
+        when(pacienteService.findById(pacienteId)).thenThrow(new NotFoundException("Erro: Paciente não encontrado."));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> {
             feedbackPacienteService.save(feedbackPacienteRecordDto, triagemId);
@@ -113,25 +114,7 @@ class FeedbackPacienteServiceImplTest {
     }
 
 
-    @Test
-    void testFindByIdSuccessfully() {
-        when(feedbackPacienteRepository.findById(any(UUID.class))).thenReturn(Optional.of(feedbackPacienteModel));
 
-        Optional<FeedbackPacienteModel> result = feedbackPacienteService.findById(UUID.randomUUID());
-
-        assertTrue(result.isPresent());
-    }
-
-    @Test
-    void testFindByIdNotFound() {
-        when(feedbackPacienteRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
-
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
-            feedbackPacienteService.findById(UUID.randomUUID());
-        });
-
-        assertEquals("Error: FeedbackPaciente não encontrado.", exception.getMessage());
-    }
 
     @Test
     void testFindAllFeedbacks() {

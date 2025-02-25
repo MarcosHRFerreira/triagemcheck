@@ -36,9 +36,9 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     public ResultClinicosModel save(ResultClinicoRecordDto resultClinicoRecordDto, UUID triagemId) {
        var resultClinicoModel = new ResultClinicosModel();
 
-        Optional<TriagemModel> triagemOptional = triagemService.findById(triagemId);
+        TriagemModel triagemOptional = triagemService.findById(triagemId);
 
-        if (triagemOptional.isEmpty()) {
+        if (triagemOptional==null) {
             throw new NotFoundException("Erro: Triagem não existe.");
         }else {
 
@@ -47,14 +47,14 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
                 throw new NoValidException("Erro: Já existe Resultado Clínico para essa Triagem.");
             }
 
-            Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(triagemOptional.get().getProfissional().getProfissionalId());
+            ProfissionalModel profissionalOptional = profissionalService.findById(triagemOptional.getProfissional().getProfissionalId());
 
-            if (profissionalOptional.isEmpty()) {
+            if (profissionalOptional == null) {
                 throw new NotFoundException("Erro: Profissional não existe.");
             }
 
-            TriagemModel triagem = triagemOptional.get();
-            ProfissionalModel profissional = profissionalOptional.get();
+            TriagemModel triagem = triagemOptional;
+            ProfissionalModel profissional = profissionalOptional;
 
             CustomBeanUtils.copyProperties(resultClinicoRecordDto, resultClinicoModel);
             resultClinicoModel.setDataCriacao(LocalDateTime.now(ZoneId.of("UTC")));
@@ -77,9 +77,9 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     }
 
     @Override
-    public Optional<ResultClinicosModel> findById(UUID resultadoId){
-        Optional<ResultClinicosModel> resultClinicosModelOptional = resultClinicoRepository.findById(resultadoId);
-        if(resultClinicosModelOptional.isEmpty()){
+    public ResultClinicosModel findById(UUID resultadoId){
+        ResultClinicosModel resultClinicosModelOptional = resultClinicoRepository.findByIdresultadoId(resultadoId);
+        if(resultClinicosModelOptional == null){
             throw new NotFoundException("Erro: Resultdo Clinico não encontrado.");
         }
         return resultClinicosModelOptional;
@@ -98,25 +98,26 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
     @Override
     public ResultClinicosModel update(ResultClinicoRecordDto resultClinicoRecordDto, UUID resultadoId) {
 
-        Optional<ResultClinicosModel> resultClinicosModelOptional = findById(resultadoId);
-        if (resultClinicosModelOptional.isEmpty()) {
+        ResultClinicosModel resultClinicosModelOptional = resultClinicoRepository.findByIdresultadoId(resultadoId);
+        if (resultClinicosModelOptional == null) {
             throw new NotFoundException("Erro: Resultado Clinicos não existe.");
         }else {
 
-              Optional<ProfissionalModel> profissionalOptional = profissionalService.findById(resultClinicosModelOptional.get().getProfissional().getProfissionalId());
-            if (profissionalOptional.isEmpty()) {
+              ProfissionalModel profissionalOptional = profissionalService.findById(resultClinicosModelOptional.getProfissional().getProfissionalId());
+            if (profissionalOptional==null) {
                 throw new NotFoundException("Erro: Profissional não existe.");
             }
 
-            Optional<TriagemModel> triagemOptional = triagemService.findById(resultClinicosModelOptional.get().getTriagem().getTriagemId());
-            if (triagemOptional.isEmpty()) {
+            TriagemModel triagemOptional = triagemService.findById(resultClinicosModelOptional.getTriagem().getTriagemId());
+
+            if (triagemOptional== null) {
                 throw new NotFoundException("Erro: Triagem não existe.");
             }
 
-            ResultClinicosModel resultado =  resultClinicosModelOptional.get();
+            ResultClinicosModel resultado =  resultClinicosModelOptional;
 
-            TriagemModel triagem = triagemOptional.get();
-            ProfissionalModel profissional = profissionalOptional.get();
+            TriagemModel triagem = triagemOptional;
+            ProfissionalModel profissional = profissionalOptional;
 
             CustomBeanUtils.copyProperties(resultClinicoRecordDto, resultado);
             resultado.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));

@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -72,10 +71,10 @@ class ProfissionalServiceTest {
 
     @Test
     void testFindById() {
-        Optional<ProfissionalModel> profissionalModelOptional = Optional.of(new ProfissionalModel());
+        ProfissionalModel profissionalModelOptional = new ProfissionalModel();
         when(profissionalService.findById(profissionalId)).thenReturn(profissionalModelOptional);
 
-        Optional<ProfissionalModel> result = profissionalService.findById(profissionalId);
+        ProfissionalModel result = profissionalService.findById(profissionalId);
 
         assertEquals(profissionalModelOptional, result);
         verify(profissionalService, times(1)).findById(profissionalId);

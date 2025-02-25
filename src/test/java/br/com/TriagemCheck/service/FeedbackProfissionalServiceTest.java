@@ -67,10 +67,10 @@ class FeedbackProfissionalServiceTest {
 
     @Test
     void testFindById() {
-        Optional<FeedbackProfissionalModel> feedbackProfissionalModelOptional = Optional.of(new FeedbackProfissionalModel());
+        FeedbackProfissionalModel feedbackProfissionalModelOptional = new FeedbackProfissionalModel();
         when(feedbackProfissionalService.findById(feedbackProfissionalId)).thenReturn(feedbackProfissionalModelOptional);
 
-        Optional<FeedbackProfissionalModel> result = feedbackProfissionalService.findById(feedbackProfissionalId);
+        FeedbackProfissionalModel result = feedbackProfissionalService.findById(feedbackProfissionalId);
 
         assertEquals(feedbackProfissionalModelOptional, result);
         verify(feedbackProfissionalService, times(1)).findById(feedbackProfissionalId);

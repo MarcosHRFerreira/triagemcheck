@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -90,12 +89,12 @@ class PacienteServiceTest {
 
     @Test
     void testFindByCpf() {
-        Optional<PacienteModel> pacienteModelOptional = Optional.of(new PacienteModel());
-        when(pacienteService.findByCpf("cpf")).thenReturn(pacienteModelOptional);
+        PacienteModel pacienteModel = new PacienteModel();
+        when(pacienteService.findByCpf("cpf")).thenReturn(pacienteModel);
 
-        Optional<PacienteModel> result = pacienteService.findByCpf("cpf");
+        PacienteModel result = pacienteService.findByCpf("cpf");
 
-        assertEquals(pacienteModelOptional, result);
+        assertEquals(pacienteModel, result);
         verify(pacienteService, times(1)).findByCpf("cpf");
     }
 
@@ -121,12 +120,12 @@ class PacienteServiceTest {
 
     @Test
     void testFindById() {
-        Optional<PacienteModel> pacienteModelOptional = Optional.of(new PacienteModel());
-        when(pacienteService.findById(pacienteId)).thenReturn(pacienteModelOptional);
+        PacienteModel pacienteModel = new PacienteModel();
+       when(pacienteService.findById(pacienteId)).thenReturn(pacienteModel);
 
-        Optional<PacienteModel> result = pacienteService.findById(pacienteId);
+        PacienteModel result = pacienteService.findById(pacienteId);
 
-        assertEquals(pacienteModelOptional, result);
+        assertEquals(pacienteModel, result);
         verify(pacienteService, times(1)).findById(pacienteId);
     }
 }

@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,8 +86,10 @@ class TriagemControllerTest {
 
     @Test
     void testGetOne() {
-        when(triagemService.findById(triagemId))
-                .thenReturn(Optional.of(new TriagemModel()));
+        UUID triagemId = UUID.randomUUID();
+        TriagemModel triagemModel = new TriagemModel();
+
+        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
 
         ResponseEntity<Object> response = triagemController.getOne(triagemId);
 

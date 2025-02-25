@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -80,7 +79,7 @@ class ResultClinicoContollerTest {
     @Test
     void testGetOne() {
         when(resultClinicoService.findById(resultadoId))
-                .thenReturn(Optional.of(new ResultClinicosModel()));
+                .thenReturn(new ResultClinicosModel());
 
         ResponseEntity<Object> response = resultClinicoContoller.getOne(resultadoId);
 

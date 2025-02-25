@@ -111,19 +111,26 @@ class ProfissionalServiceImplTest {
 
     @Test
     void testFindByIdProfissionalNaoEncontrado() {
-        when(profissionalRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(profissionalRepository.findByIdprofissionalId(any(UUID.class))).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> profissionalService.findById(profissionalId));
+        UUID profissionalId = UUID.randomUUID();
+
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            profissionalService.findById(profissionalId);
+        });
+
+        assertEquals("Erro: Profissional não encontrado.", exception.getMessage());
     }
+
 
     @Test
     void testFindByIdProfissionalEncontrado() {
-        when(profissionalRepository.findById(any(UUID.class))).thenReturn(Optional.of(profissionalModel));
+        when(profissionalRepository.findByIdprofissionalId(any(UUID.class))).thenReturn(profissionalModel);
 
-        Optional<ProfissionalModel> foundProfissional = profissionalService.findById(profissionalId);
+        ProfissionalModel foundProfissional = profissionalService.findById(profissionalId);
 
-        assertTrue(foundProfissional.isPresent());
-        assertEquals(profissionalModel.getEmail(), foundProfissional.get().getEmail());
+        assertNotNull(foundProfissional);
+        assertEquals(profissionalModel.getEmail(), foundProfissional.getEmail());
     }
 
     @Test

@@ -24,8 +24,17 @@ Este sistema foi desenvolvido para avaliar a qualidade da triagem de pacientes e
 
 ## <span style="color: lightblue;">Implementação</span>
 
-### <span style="color: lightyellow;"> Estrutura do Projeto/span>
+### <span style="color: lightyellow;"> Estrutura do Projeto</span>
 Este projeto é um sistema desenvolvido utilizando o Spring Boot e diversas dependências para criação de uma aplicação web robusta e escalável.
+
+## Documentos Importantes
+
+- [**Acesso a Estrutura de Tabelas**](Tabelas_TriagemCheck.drawio.pdf)
+- [**Acesso a Arquitetura Proposta**](Arquitetura-Microservices-TriagemCheck.drawio.pdf)
+- [**Acesso ao Fluxo do Processo**](Fluxo-TriagemCheck.drawio.pdf)
+
+- [**Acesse a documentação Swagger**](http://localhost:8082/triagemcheck/swagger-ui/index.html)
+
 
 ### <span style="color: lightblue;"> Dependências</span>
 Abaixo estão as principais dependências utilizadas no projeto:
@@ -84,7 +93,7 @@ O projeto é construído utilizando o plugin Maven do Spring Boot.
 ### <span style="color: lightblue;">Estrutura do Projeto</span>
 
 
-#### <span style="color: lightyellow;">--- Descrição da Estrutura ---</span>
+#### <span style="color: lightyellow;">Descrição da Estrutura</span>
 
 
 #### - src/main/java: Contém o código fonte da aplicação.

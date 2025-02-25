@@ -20,4 +20,7 @@ public interface ResultClinicoRepository extends JpaRepository<ResultClinicosMod
 
     @Query(value="select * from TB_RESULTCLINICOS where triagem_triagem_id = :triagemId", nativeQuery = true)
     Optional<ResultClinicosModel> findByIdTriagem(UUID triagemId);
+
+    @Query(value="select * from TB_RESULTCLINICOS where resultado_id = :resultadoId", nativeQuery = true)
+    ResultClinicosModel findByIdresultadoId(UUID resultadoId);
 }

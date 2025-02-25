@@ -16,7 +16,7 @@ public interface FeedbackProfissionalService {
     Page<FeedbackProfissionalModel> findAll(Pageable pageable);
 
 
-    Optional<FeedbackProfissionalModel> findById(UUID feedbackprofissionalId);
+    FeedbackProfissionalModel findById(UUID feedbackprofissionalId);
 
     Optional<FeedbackProfissionalModel> findProfissionalTriagemInFeedback(UUID profissionalId, UUID triagemId, UUID feedbackprofissionalId);
 

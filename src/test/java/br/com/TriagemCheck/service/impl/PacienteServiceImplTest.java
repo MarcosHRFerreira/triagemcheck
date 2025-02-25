@@ -7,7 +7,9 @@ import br.com.TriagemCheck.enums.UnidadeFederativa;
 import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
 import br.com.TriagemCheck.models.PacienteModel;
+import br.com.TriagemCheck.models.TriagemModel;
 import br.com.TriagemCheck.repositories.PacienteRepository;
+import br.com.TriagemCheck.repositories.TriagemRepository;
 import br.com.TriagemCheck.services.impl.PacienteServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,9 @@ class PacienteServiceImplTest {
 
     @Mock
     private PacienteRepository pacienteRepository;
+
+    @Mock
+    private TriagemRepository triagemRepository;
 
     @InjectMocks
     private PacienteServiceImpl pacienteService;
@@ -146,19 +151,19 @@ class PacienteServiceImplTest {
 
     @Test
     void testFindByCpfPacienteNaoEncontrado() {
-        when(pacienteRepository.findByCpf(anyString())).thenReturn(Optional.empty());
+        when(pacienteRepository.findByCpf(anyString())).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> pacienteService.findByCpf("12345678900"));
     }
 
     @Test
     void testFindByCpfPacienteEncontrado() {
-        when(pacienteRepository.findByCpf(anyString())).thenReturn(Optional.of(pacienteModel));
+        when(pacienteRepository.findByCpf(anyString())).thenReturn((pacienteModel));
 
-        Optional<PacienteModel> foundPaciente = pacienteService.findByCpf("12345678900");
+        PacienteModel foundPaciente = pacienteService.findByCpf("12345678900");
 
-        assertTrue(foundPaciente.isPresent());
-        assertEquals(pacienteModel.getCpf(), foundPaciente.get().getCpf());
+        assertNotNull(foundPaciente);
+        assertEquals(pacienteModel.getCpf(), foundPaciente.getCpf());
     }
 
     @Test
@@ -193,20 +198,46 @@ class PacienteServiceImplTest {
     }
 
     @Test
-    void testDeletePacienteNaoEncontrado() {
-        when(pacienteRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+    void testDeletePacienteComSucesso() {
+        when(pacienteRepository.findById(any(UUID.class))).thenReturn(Optional.of(pacienteModel));
+        when(triagemRepository.findPacienteIntoTriagem(any(UUID.class))).thenReturn(Optional.empty());
+        doNothing().when(pacienteRepository).deleteById(any(UUID.class));
 
-        assertThrows(NotFoundException.class, () -> pacienteService.delete(pacienteId));
+        pacienteService.delete(pacienteModel.getPacienteId());
+
+        verify(pacienteRepository, times(1)).deleteById(pacienteModel.getPacienteId());
     }
 
     @Test
-    void testDeletePacienteComSucesso() {
-        when(pacienteRepository.findById(any(UUID.class))).thenReturn(Optional.of(pacienteModel));
-        doNothing().when(pacienteRepository).deleteById(any(UUID.class));
+    void testDeletePacienteNaoEncontrado() {
+         pacienteId = pacienteModel.getPacienteId();
+        when(pacienteRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
 
-        pacienteService.delete(pacienteId);
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> {
+            pacienteService.delete(pacienteId);
+        });
 
-        verify(pacienteRepository, times(1)).deleteById(pacienteId);
+        assertEquals("Erro: Paciente não encontrado.", exception.getMessage());
     }
+
+    @Test
+    void testDeletePacienteComTriagemAssociada() {
+         pacienteId = pacienteModel.getPacienteId();
+        when(pacienteRepository.findById(any(UUID.class))).thenReturn(Optional.of(pacienteModel));
+        when(triagemRepository.findPacienteIntoTriagem(any(UUID.class))).thenReturn(Optional.of(new TriagemModel()));
+
+        NoValidException exception = assertThrows(NoValidException.class, () -> {
+            pacienteService.delete(pacienteId);
+        });
+
+        assertEquals("Erro: A Deleção não será posssível, existem(s) Triagem associada ao paciente.", exception.getMessage());
+    }
+
+
+
+
 }
+
+
+
 
