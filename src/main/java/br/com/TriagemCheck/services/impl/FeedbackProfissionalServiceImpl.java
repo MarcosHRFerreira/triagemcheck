@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -114,19 +115,13 @@ public class FeedbackProfissionalServiceImpl implements FeedbackProfissionalServ
         if (feedbackProfissionalModelOptional == null) {
             throw new NotFoundException("Erro: Feedback não encontrado.");
         }else {
-            ProfissionalModel profissionalOptional = profissionalService.findById(feedbackProfissionalModelOptional.getProfissional().getProfissionalId());
-            if (profissionalOptional == null) {
-                throw new NotFoundException("Erro: Profissional não encontrado.");
-            }
-            TriagemModel triagemOptional = triagemService.findById(feedbackProfissionalModelOptional.getTriagem().getTriagemId());
-            if (triagemOptional == null) {
-                throw new NotFoundException("Erro: Triagem não encontrada.");
-            }
 
-            if (feedbackProfissionalRecordDto.avaliacaoseveridade() <= 0 || feedbackProfissionalRecordDto.avaliacaoseveridade() > 6) {
+            if (Objects.nonNull(feedbackProfissionalRecordDto.avaliacaoseveridade()) &&
+                    (feedbackProfissionalRecordDto.avaliacaoseveridade() <= 0 || feedbackProfissionalRecordDto.avaliacaoseveridade() > 5)) {
                 throw new NoValidException("Error: Avaliacao de Severidade tem que ser entre 1 e 5.");
             }
-            if (feedbackProfissionalRecordDto.avaliacaoeficacia() <= 0 || feedbackProfissionalRecordDto.avaliacaoeficacia() > 6) {
+            if (Objects.nonNull(feedbackProfissionalRecordDto.avaliacaoeficacia()) &&
+                    (feedbackProfissionalRecordDto.avaliacaoeficacia() <= 0 || feedbackProfissionalRecordDto.avaliacaoeficacia() > 5)) {
                 throw new NoValidException("Error: Avaliacao de Eficacia tem que ser entre 1 e 5.");
             }
 

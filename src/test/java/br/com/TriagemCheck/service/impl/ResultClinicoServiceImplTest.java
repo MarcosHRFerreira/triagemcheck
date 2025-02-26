@@ -122,16 +122,12 @@ class ResultClinicoServiceImplTest {
     @Test
     void testUpdate() {
         when(resultClinicoRepository.findByIdresultadoId(resultadoId)).thenReturn(resultClinicosModel);
-        when(profissionalService.findById(profissionalId)).thenReturn(profissionalModel);
-        when(triagemService.findById(triagemId)).thenReturn(triagemModel);
         when(resultClinicoRepository.save(any(ResultClinicosModel.class))).thenReturn(resultClinicosModel);
 
         ResultClinicosModel result = resultClinicoService.update(resultClinicoRecordDto, resultadoId);
 
         assertNotNull(result);
         verify(resultClinicoRepository).findByIdresultadoId(resultadoId);
-        verify(profissionalService).findById(profissionalId);
-        verify(triagemService).findById(triagemId);
         verify(resultClinicoRepository).save(any(ResultClinicosModel.class));
     }
 }

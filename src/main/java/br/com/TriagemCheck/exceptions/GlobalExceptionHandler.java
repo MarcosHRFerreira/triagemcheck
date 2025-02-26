@@ -109,4 +109,9 @@ public class GlobalExceptionHandler {
         logger.error("Exception message: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorRecordResponse);
     }
+
+
+
+
+
 }

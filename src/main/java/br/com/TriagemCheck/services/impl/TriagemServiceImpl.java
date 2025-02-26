@@ -4,7 +4,6 @@ import br.com.TriagemCheck.configs.CustomBeanUtils;
 import br.com.TriagemCheck.converter.TriagemConverter;
 import br.com.TriagemCheck.dtos.TriagemCompletaRecordDto;
 import br.com.TriagemCheck.dtos.TriagemRecordDto;
-import br.com.TriagemCheck.enums.CorProtocolo;
 import br.com.TriagemCheck.enums.StatusOperacional;
 import br.com.TriagemCheck.exceptions.NoValidException;
 import br.com.TriagemCheck.exceptions.NotFoundException;
@@ -132,14 +131,6 @@ public class TriagemServiceImpl implements TriagemService {
             if (profissional.getStatusOperacional().equals(StatusOperacional.INATIVO)) {
                 throw new NoValidException("Erro: Profissional com Status de inativo. Não permitindo cadastro da Triagem, com esse profissional.");
             }
-
-            try {
-                CorProtocolo corProtocolo = CorProtocolo.valueOf(triagemRecordDto.corProtocolo().toString());
-                triagem.setCorProtocolo(corProtocolo);
-            } catch (IllegalArgumentException e) {
-                throw new NoValidException("Erro: Cor do Protocolo inválido.");
-            }
-
 
             CustomBeanUtils.copyProperties(triagemRecordDto, triagem);
             triagem.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));

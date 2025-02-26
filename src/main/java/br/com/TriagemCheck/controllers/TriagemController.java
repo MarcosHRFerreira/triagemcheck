@@ -99,6 +99,7 @@ public class TriagemController {
 
         logger.debug("PUT triagens triagemRecordDto received {} ", triagemRecordDto);
 
+
             return ResponseEntity.status(HttpStatus.OK).body(triagemService.update(triagemRecordDto, triagemId));
     }
     @Operation(summary = "Listar Triagens Completas", description = "Retorna uma lista paginada de triagens com informações detalhdas")

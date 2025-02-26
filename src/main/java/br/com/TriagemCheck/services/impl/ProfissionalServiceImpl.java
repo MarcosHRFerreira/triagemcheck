@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -94,15 +95,19 @@ public class ProfissionalServiceImpl implements ProfissionalService {
         } else {
             ProfissionalModel profissional = profissionalOptional.get();
 
-            if (!profissional.getCrm().equals(profissionalRecordDto.crm()) && profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
+            if (Objects.nonNull(profissionalRecordDto.crm()) &&
+                    !Objects.equals(profissional.getCrm(), profissionalRecordDto.crm()) &&
+                    profissionalRepository.existsBycrm(profissionalRecordDto.crm())) {
                 throw new NoValidException("Erro: Esse CRM já existe para outro profissional.");
             }
-            if (!emailValidator.isValid(profissionalRecordDto.email())) {
-                throw new NoValidException("Erro: Email inválido.");
-            }
 
-            if(!profissional.getEmail().equals(profissionalRecordDto.email()) && existsByEmail(profissionalRecordDto.email()) ){
-                throw new NoValidException("Erro: Email já existe.");
+            if(profissionalRecordDto.email() !=null) {
+                if (!emailValidator.isValid(profissionalRecordDto.email())) {
+                    throw new NoValidException("Erro: Email inválido.");
+                }
+                if(!profissional.getEmail().equals(profissionalRecordDto.email()) && existsByEmail(profissionalRecordDto.email()) ){
+                    throw new NoValidException("Erro: Email já existe.");
+                }
             }
 
             CustomBeanUtils.copyProperties(profissionalRecordDto, profissional);

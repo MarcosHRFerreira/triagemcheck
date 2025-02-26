@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -104,15 +105,10 @@ public class FeedbackPacienteServiceImpl implements FeedbackPacienteService {
             throw new NotFoundException("Erro: Feedback não encontrado.");
         }else {
 
-            TriagemModel triagemOptional = triagemService.findById(feedbackOptional.getTriagem().getTriagemId());
-            if (triagemOptional == null) {
-                throw new NotFoundException("Erro: Triagem não encontrada.");
-            }
-
             FeedbackPacienteModel feedback = feedbackOptional;
 
-            if (feedbackPacienteRecordDto.avaliacao() <= 0 || feedbackPacienteRecordDto.avaliacao() > 6) {
-                throw new NoValidException("Error: Avaliacao tem que ser entre 1 e 5.");
+            if (Objects.nonNull(feedbackPacienteRecordDto.avaliacao()) && (feedbackPacienteRecordDto.avaliacao() <= 0 || feedbackPacienteRecordDto.avaliacao() > 5)) {
+                throw new NoValidException("Error: Avaliacao de   tem que ser entre 1 e 5.");
             }
 
             CustomBeanUtils.copyProperties(feedbackPacienteRecordDto, feedback);

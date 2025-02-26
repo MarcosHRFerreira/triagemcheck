@@ -103,27 +103,10 @@ public class ResultClinicoServiceImpl implements ResultClinicoService {
             throw new NotFoundException("Erro: Resultado Clinicos não existe.");
         }else {
 
-              ProfissionalModel profissionalOptional = profissionalService.findById(resultClinicosModelOptional.getProfissional().getProfissionalId());
-            if (profissionalOptional==null) {
-                throw new NotFoundException("Erro: Profissional não existe.");
-            }
-
-            TriagemModel triagemOptional = triagemService.findById(resultClinicosModelOptional.getTriagem().getTriagemId());
-
-            if (triagemOptional== null) {
-                throw new NotFoundException("Erro: Triagem não existe.");
-            }
-
             ResultClinicosModel resultado =  resultClinicosModelOptional;
-
-            TriagemModel triagem = triagemOptional;
-            ProfissionalModel profissional = profissionalOptional;
 
             CustomBeanUtils.copyProperties(resultClinicoRecordDto, resultado);
             resultado.setDataAlteracao(LocalDateTime.now(ZoneId.of("UTC")));
-
-            resultado.setProfissional(profissional);
-            resultado.setTriagem((triagem));
 
             return resultClinicoRepository.save(resultado);
         }
