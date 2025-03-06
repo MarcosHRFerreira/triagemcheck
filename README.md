@@ -90,10 +90,10 @@ O projeto é construído utilizando o plugin Maven do Spring Boot.
 3. Compile o código: `javac -d bin src/*.java`
 4. Execute o sistema: `java -cp bin Main`
 
-### <span style="color: lightblue;">Estrutura do Projeto</span>
 
 
-#### <span style="color: lightyellow;">Descrição da Estrutura</span>
+
+### <span style="color: lightyellow;">Descrição da Estrutura</span>
 
 
 #### - src/main/java: Contém o código fonte da aplicação.
